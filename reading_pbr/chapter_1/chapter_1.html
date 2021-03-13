@@ -1,0 +1,169 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css?family=Fredericka+the+Great:400,800" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Josefin+Slab:400,800" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=EB+Garamond:400,800" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Lato:400,800" rel="stylesheet">
+    <link rel=stylesheet type="text/css" href="../../topic_style.css">
+    <title>Chapter 1: Introduction</title>
+</head>
+
+<body>
+    <header>
+        <div class="inner_header">
+            <div class="logo_container">
+                <h1>Chapter 1: Introduction</h1>
+            </div>
+
+            <ul class="navigation">
+                <a href="../../inedx.html"><li>Home</li></a>
+                <a href="../reading_pbr.html"><li>PBR</li></a>
+            </ul>
+        </div>
+    </header>
+
+    <div class="table_content">
+        <div class="section_shortcuts">
+            <h1>Sections</h1>
+            <div class="shortcuts">
+                <a href="#literate">Literate Programming</a>
+            </div>
+            
+            <div class="shortcuts">
+                <a href="#photorealistic">Photorealistic Rendering and the Ray-Tracing Algorithm</a>
+            </div>
+            
+            <div class="shortcuts">
+                <a href="#pbrt">pbrt: System Overview</a>
+            </div>
+        </div>
+
+        <!-- Section: Literate Programming -->
+        <div class="section_content" id="literate">
+            <h1>Literate Programming</h1>
+        </div>
+
+        <!-- Section: Photorealistic Rendering and the Ray-Tracing Algorithm -->
+        <div class="section_content" id="photorealistic">
+            <h1>Photorealistic Rendering and the Ray-Tracing Algorithm</h1>
+        </div>
+
+        <!-- Section: Photorealistic Rendering and the Ray-Tracing Algorithm -->
+        <div class="section_content" id="pbrt">
+            <h1>pbrt: System Overview</h1>
+        </div>
+
+        <!-- Section: Reference -->
+        <div class="section_content" id="reference">
+            <h1>Reference</h1>
+        </div>
+    </div>
+    
+    <!-- For shortcut icons -->
+    <div class="float_icon_table noselect">
+        <div class="float_icon_row">
+            <img src="../../next_icon.svg" class="float_icon" onclick="location.href='../chapter_2/chapter_2.html';"/>
+        </div>
+        <div class="float_icon_row">
+            <img src="../../topics_icon.svg" class="float_icon" id="topics_icon" onclick="displaySections();"/>
+            <ul style="display: none;" id="section_menu">
+            </ul>
+            <script>
+                // Configure section menu
+                var section_menu = document.getElementById("section_menu");
+                var shorcut_collection = document.getElementsByClassName("shortcuts");
+                for (let shortcut of shorcut_collection) {
+                    var section_name = shortcut.childNodes[1].innerHTML;
+                    var li = document.createElement("li");
+                    var a = document.createElement("a");
+                    a.appendChild(document.createTextNode(section_name));
+                    a.href = shortcut.childNodes[1].href;
+                    li.appendChild(a);
+                    section_menu.appendChild(li);
+                }
+
+                // Show or hide section menu when clicked
+                function displaySections() {
+                    if (section_menu.style.display === 'none') {
+                        section_menu.style.display = "block";
+                    } 
+                    else {
+                        section_menu.style.display = "none";
+                    }
+                }
+                
+                window.addEventListener('click', function(e){
+                    // Clicked outside the topics_icon
+                    if (!document.getElementById('topics_icon').contains(e.target)){
+                        section_menu.style.display = "none";
+                    }
+                });
+            </script>
+        </div>
+        <div class="float_icon_row">
+            <img src="../../top_icon.svg" class="float_icon" onclick="location.href='#';"/>
+        </div>
+    </div>
+    <div class="icon_desc">Next chapter</div>
+    <div class="icon_desc">Bookmark</div>
+    <div class="icon_desc">Top</div>
+    <script>
+        function getOffset(el) {
+            const rect = el.getBoundingClientRect();
+            return {
+                left: rect.left + window.scrollX,
+                top: rect.top + window.scrollY
+            };
+        }
+        var icon_table = document.getElementsByClassName("float_icon_table")[0];
+        var icon_rows = icon_table.getElementsByClassName("float_icon_row");
+        var desc_rows = document.getElementsByClassName("icon_desc");
+        for(var i = 0; i < icon_rows.length; i++) {
+            var icon = icon_rows[i].getElementsByTagName("img")[0];
+            
+            icon.addEventListener(
+                'mouseleave',
+                function() {
+                    var desc = desc_rows[i];
+                    return function() {
+                        desc.style.visibility = "hidden";
+                    }
+            }());
+            icon.addEventListener(
+                'mouseover',
+                function() {
+                    var icon_func = icon_rows[i].getElementsByTagName("img")[0];
+                    var desc = desc_rows[i];
+                    var desc_top = getOffset(desc).top;
+                    var desc_left = getOffset(desc).left;
+                    return function() {
+                        var icon_top = getOffset(icon_func).top;
+                        var icon_left = getOffset(icon_func).left;
+                        var translate_x = icon_left - desc_left - desc.offsetWidth - 10;
+                        var translate_y = icon_top - desc_top + 0.5 * icon_func.offsetHeight - 0.5 * desc.offsetHeight;
+                        desc.style.transform = "translate(" + translate_x.toString() + "px," + translate_y.toString() + "px)";
+                        desc.style.visibility = "visible";
+                    }
+            }());
+            document.addEventListener(
+                'scroll', 
+                function() {
+                    var icon_func = icon_rows[i].getElementsByTagName("img")[0];
+                    var desc = desc_rows[i];
+                    var desc_top = getOffset(desc).top;
+                    var desc_left = getOffset(desc).left;
+                    return function() {
+                        var icon_top = getOffset(icon_func).top;
+                        var icon_left = getOffset(icon_func).left;
+                        var translate_x = icon_left - desc_left - desc.offsetWidth - 10;
+                        var translate_y = icon_top - desc_top + 0.5 * icon_func.offsetHeight - 0.5 * desc.offsetHeight;
+                        desc.style.transform = "translate(" + translate_x.toString() + "px," + translate_y.toString() + "px)";
+                }
+            } ());
+        }
+    </script>
+</body>
+
+</html>

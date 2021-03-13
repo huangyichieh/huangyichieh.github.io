@@ -1,0 +1,274 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css?family=Fredericka+the+Great:400,800" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Josefin+Slab:400,800" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=EB+Garamond:400,800" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Lato:400,800" rel="stylesheet">
+    <link rel=stylesheet type="text/css" href="../topic_style.css">
+    <title>Get familiar with blender</title>
+</head>
+
+<body>
+    <header>
+        <div class="inner_header">
+            <div class="logo_container">
+                <h1>Getting familiar with blender</h1>
+            </div>
+
+            <ul class="navigation">
+                <a href="../inedx.html"><li>Home</li></a>
+            </ul>
+        </div>
+    </header>
+
+    <div class="table_content">
+        <div class="section_shortcuts">
+            <h1>Sections</h1>
+            <div class="shortcuts">
+                <a href="#built_in_simulations">Built-in Simulations</a>
+            </div>
+            
+            <div class="shortcuts">
+                <a href="#hotkeys">Hotkeys</a>
+            </div>
+
+            <div class="shortcuts">
+                <a href="#reference">Reference</a>
+            </div>
+        </div>
+
+        <!-- Section: Built-in Simulations -->
+        <div class="section_content" id="built_in_simulations">
+            <h1>Built-in Simulations</h1>
+
+            <table style="margin-left: auto;margin-right: auto;">
+                <tr>
+                    <td>
+                        <video width="400" height="300" controls>
+                            <source src="fire_and_smoke.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                        <h3>Fire and smoke simulations</h3>
+                    </td>
+                    <td>
+                        <video width="400" height="300" controls>
+                            <source src="cloth.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                        <h3>Cloth simulations</h3>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <video width="400" height="300" controls>
+                            <source src="rigid_body.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                        <h3>Rigid body simulations</h3>
+                    </td>
+                    <td>
+                        <video width="400" height="300" controls>
+                            <source src="particles.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                        <h3>Particles simulations</h3>
+                    </td>
+                </tr>
+            </table>
+            
+        </div>
+
+        <!-- Section: Hotkeys -->
+        <div class="section_content" id="hotkeys">
+            <h1>Hotkeys</h1>
+            <p>Summarization of hotkeys for Blender's tools.</p>
+            <h2>View</h2>
+            <li><b>Mouse-middle-click</b>(drag): Rotate view</li>
+            <li><b>Shift</b> + <b>Mouse-middle-click</b>(drag): Translate view</li>
+            <li>[Select object]'<b> . </b>' from numberpad: Focus view on object</li>
+            <li>'<b>0</b>' from numberpad: Camera view</li>
+
+            <h2>Transformation</h2>
+            <li><b>g</b>: Translation</li>
+            <li><b>g</b> + <b>x</b>/<b>y</b>/<b>z</b>: Translation along x/y/z axis</li>
+            <li><b>g</b> + <b>Shift</b> + <b>x</b>/<b>y</b>/<b>z</b>: 
+                Translation along plane with normal axis x/y/z</li>
+            <li><b>r</b>: Rotation</li>
+            <li><b>r</b> + <b>x</b>/<b>y</b>/<b>z</b>: Rotation along x/y/z axis</li>
+            <li><b>r</b> + <b>Shift</b> + <b>x</b>/<b>y</b>/<b>z</b>: 
+                Rotation along plane with normal axis x/y/z</li>
+            <li><b>s</b>: Scaling</li>
+            <li><b>s</b> + <b>x</b>/<b>y</b>/<b>z</b>: Scale along x/y/z axis</li>
+            <li><b>s</b> + <b>Shift</b> + <b>x</b>/<b>y</b>/<b>z</b>: 
+                Scale along plane with normal axis x/y/z</li>
+            <li><b>Alt</b> + <b>g</b>/<b>r</b>/<b>s</b>: 
+                Restore to default translation/rotation/scale</li>
+            <li><b>Shift</b> + <b>Mouse-right-click</b>: Move pivot point</li>
+
+            <h2>Add/Delete</h2>
+            <li><b>Shift</b> + <b>a</b>: Add menu</li>
+            <li><b>x</b>/<b>Del</b>: Delete object</li>
+            <li><b>m</b>: Move to collection</li>
+
+            <h2>Object mode</h2>
+            <li><b>Ctrl</b> + <b>j</b>: Join object</li>
+
+            <h2>Edit mode</h2>
+            <li><b>Tab</b>: To edit mode</li>
+            <li><b>p</b>: Seperate</li>
+            <li><b>1</b>/<b>2</b>/<b>3</b>: Point/Edge/Face selection mode(<b>Shift</b> to add into selction mode)</li>
+            <li><b>Alt</b> + <b>Mouse-left-click</b>: Loop selection</li>
+            <li><b>E</b>: Extrude tool</li>
+            <li><b>E</b> + <b>Mouse-left-click</b>: Create duplicate faces</li>
+            <li><b>Ctrl</b> + <b>Mouse-right-click</b>: Extrude to cursor</li>
+            <li><b>Ctrl</b> + <b>r</b>: Loop cut tool(scroll <b>Mouse-wheel</b> to add more loop)</li>
+            <li><b>Ctrl</b> + <b>b</b>: Bevel tool</li>
+            <li><b>Ctrl</b> + <b>Shift</b> + <b>b</b>: Bevel tool for corners</li>
+            <li><b>k</b>: Knife tool</li>
+
+            <h2>Pose mode</h2>
+            <li>[During object mode or pose mode]<b>Ctrl</b> + <b>Tab</b>: Object mode to pose mode, or vice versa</li>
+            <li><b>Ctrl</b> + <b>p</b>: Parent Armature</li>
+            <li><b>Alt</b> + <b>p</b>: Clear parent</li>
+            <li><b>m</b>: Change bone layer</li>
+
+            <h2>Keyframe tools</h2>
+            <li><b>Alt</b> + <b>Mouse-wheel-scroll</b>: Move frame</li>
+            <li><b>Space</b>: Play/Pause animation</li>
+            <li>[Mouse-cursor on certain attribute]<b>i</b>: Insert keyframe according to that attribute</li>
+            <li>[Mouse-cursor on timeline]<b>m</b>: Add marker to timelime</li>
+            <li>[Mouse-cursor on marker region]<b>Ctrl</b> + <b>m</b>: Rename marker</li>
+            <li>[Mouse-cursor on dope sheet]<b>t</b>: Set keyframe interpolation mode</li>
+            
+            <h2>Sculpt mode</h2>
+            <li><b>Ctrl</b>: Carve inward(Default: carve outward)/Deform along average normal direction</li>
+            <li><b>f</b>: Adjust brush size</li>
+            <li><b>Shift</b> + <b>f</b>: Adjust bruch Strength</li>
+            <li><b>c</b>: Clay brush</li>
+            <li><b>l</b>: Layer brush</li>
+            <li><b>i</b>: Inflate brush</li>
+            <li><b>Shift</b> + <b>c</b>: Crease brush</li>
+            <li><b>s</b>: Smooth brush</li>
+            <li><b>Shift</b>(hold): Apply smooth brush</li>
+            <li><b>Shift</b> + <b>t</b>: Flattening brush</li>
+            <li><b>p</b>: Pinch brush</li>
+            <li><b>g</b>: Grab brush</li>
+            <li><b>k</b>: Snake hook brush</li>
+
+            <h2>Pie menu</h2>
+            <li><b>z</b>: Shading mode</li>
+            <li><b>Shift</b> + <b>s</b>: Snap menu</li>
+        </div>
+        
+        <!-- Section: Reference -->
+        <div class="section_content" id="reference">
+            <h1>Reference</h1>
+            <li><a href="https://www.youtube.com/playlist?list=PLa1F2ddGya_-UvuAqHAksYnB0qL9yWDO6">
+                https://www.youtube.com/playlist?list=PLa1F2ddGya_-UvuAqHAksYnB0qL9yWDO6</a></li>
+        </div>
+    </div>
+
+    <!-- For shortcut icons -->
+    <div class="float_icon_table noselect">
+        <div class="float_icon_row">
+            <img src="../topics_icon.svg" class="float_icon" id="topics_icon" onclick="displaySections();"/>
+            <ul style="display: none;" id="section_menu">
+            </ul>
+            <script>
+                // Configure section menu
+                var section_menu = document.getElementById("section_menu");
+                var shorcut_collection = document.getElementsByClassName("shortcuts");
+                for (let shortcut of shorcut_collection) {
+                    var section_name = shortcut.childNodes[1].innerHTML;
+                    var li = document.createElement("li");
+                    var a = document.createElement("a");
+                    a.appendChild(document.createTextNode(section_name));
+                    a.href = shortcut.childNodes[1].href;
+                    li.appendChild(a);
+                    section_menu.appendChild(li);
+                }
+
+                // Show or hide section menu when clicked
+                function displaySections() {
+                    if (section_menu.style.display === 'none') {
+                        section_menu.style.display = "block";
+                    } 
+                    else {
+                        section_menu.style.display = "none";
+                    }
+                }
+                
+                window.addEventListener('click', function(e){
+                    // Clicked outside the topics_icon
+                    if (!document.getElementById('topics_icon').contains(e.target)){
+                        section_menu.style.display = "none";
+                    }
+                });
+            </script>
+        </div>
+        <div class="float_icon_row">
+            <img src="../top_icon.svg" class="float_icon" onclick="location.href='#';"/>
+        </div>
+    </div>
+    <div class="icon_desc">Bookmark</div>
+    <div class="icon_desc">Top</div>
+    <script>
+        function getOffset(el) {
+            const rect = el.getBoundingClientRect();
+            return {
+                left: rect.left + window.scrollX,
+                top: rect.top + window.scrollY
+            };
+        }
+        var icon_table = document.getElementsByClassName("float_icon_table")[0];
+        var icon_rows = icon_table.getElementsByClassName("float_icon_row");
+        var desc_rows = document.getElementsByClassName("icon_desc");
+        for(var i = 0; i < icon_rows.length; i++) {
+            var icon = icon_rows[i].getElementsByTagName("img")[0];
+            
+            icon.addEventListener(
+                'mouseleave',
+                function() {
+                    var desc = desc_rows[i];
+                    return function() {
+                        desc.style.visibility = "hidden";
+                    }
+            }());
+            icon.addEventListener(
+                'mouseover',
+                function() {
+                    var icon_func = icon_rows[i].getElementsByTagName("img")[0];
+                    var desc = desc_rows[i];
+                    var desc_top = getOffset(desc).top;
+                    var desc_left = getOffset(desc).left;
+                    return function() {
+                        var icon_top = getOffset(icon_func).top;
+                        var icon_left = getOffset(icon_func).left;
+                        var translate_x = icon_left - desc_left - desc.offsetWidth - 10;
+                        var translate_y = icon_top - desc_top + 0.5 * icon_func.offsetHeight - 0.5 * desc.offsetHeight;
+                        desc.style.transform = "translate(" + translate_x.toString() + "px," + translate_y.toString() + "px)";
+                        desc.style.visibility = "visible";
+                    }
+            }());
+            document.addEventListener(
+                'scroll', 
+                function() {
+                    var icon_func = icon_rows[i].getElementsByTagName("img")[0];
+                    var desc = desc_rows[i];
+                    var desc_top = getOffset(desc).top;
+                    var desc_left = getOffset(desc).left;
+                    return function() {
+                        var icon_top = getOffset(icon_func).top;
+                        var icon_left = getOffset(icon_func).left;
+                        var translate_x = icon_left - desc_left - desc.offsetWidth - 10;
+                        var translate_y = icon_top - desc_top + 0.5 * icon_func.offsetHeight - 0.5 * desc.offsetHeight;
+                        desc.style.transform = "translate(" + translate_x.toString() + "px," + translate_y.toString() + "px)";
+                }
+            } ());
+        }
+    </script>
+</body>
+
+</html>

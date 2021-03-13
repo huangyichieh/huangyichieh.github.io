@@ -1,0 +1,126 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css?family=Fredericka+the+Great:400,800" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Josefin+Slab:400,800" rel="stylesheet">
+    <link rel=stylesheet type="text/css" href="index_style.css">
+    <title>Jay's Learning Diary</title>
+</head>
+
+<body>
+    <header>
+        <div class="inner_header">
+            <div class="logo_container">
+                <h1>Jay's Learning Blog</h1>
+            </div>
+
+            <ul class="navigation">
+                <a><li>About</li></a>
+            </ul>
+        </div>
+    </header>
+
+    <div>
+        <div class="table_content">
+            <div class="topic_row">
+                <div class="topic_block">
+                    <a href="web_front_learning/web_front_learning.html">Web front-end learning</a>
+                    <p>Some examples and learning of web front-end. summarization and breakdown of my web projects</p>
+                    <address>http://test.com</address>
+                </div>
+            </div>
+
+            <div class="topic_row">
+                <div class="topic_block">
+                    <a href="get_familiar_to_blender/get_familiar_to_blender.html">Get familiar with blender</a>
+                    <p>Learning some fundamentals of blender, testing with built-in physical simulations and some blender scripting.</p>
+                    <address>http://test.com</address>
+                </div>
+            </div>
+
+            <div class="topic_row">
+                <div class="topic_block">
+                    <a href="bpy_fundamentals/bpy_fundamentals.html">Bpy fundmentals</a>
+                    <p>Understanding Fundamentals of blender python API, including some code examples. The code examples cover some basic 
+                    operations like adding meshes and perform simple animations.</p>
+                    <address>http://test.com</address>
+                </div>
+            </div>
+
+            <div class="topic_row">
+                <div class="topic_block">
+                    <a href="reading_pbr/reading_pbr.html">Reading: Physically Based Rendering</a>
+                    <p>Learning summary and break down for the book "<i>Physically Based Rendering: from theory to implementation</i>". 
+                    Extra information and updates are available at <i>https://www.pbrt.org/</i>.</p>
+                    <address>http://test.com</address>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- For shortcuts icon -->
+    <div class="float_icon_table">
+        <div class="float_icon_row">
+            <img src="../top_icon.svg" class="float_icon" onclick="location.href='#';"/>
+        </div>
+    </div>
+    <div class="icon_desc">Top</div>
+    <script>
+        function getOffset(el) {
+            const rect = el.getBoundingClientRect();
+            return {
+                left: rect.left + window.scrollX,
+                top: rect.top + window.scrollY
+            };
+        }
+        var icon_table = document.getElementsByClassName("float_icon_table")[0];
+        var icon_rows = icon_table.getElementsByClassName("float_icon_row");
+        var desc_rows = document.getElementsByClassName("icon_desc");
+        for(var i = 0; i < icon_rows.length; i++) {
+            var icon = icon_rows[i].getElementsByTagName("img")[0];
+            
+            icon.addEventListener(
+                'mouseleave',
+                function() {
+                    var desc = desc_rows[i];
+                    return function() {
+                        desc.style.visibility = "hidden";
+                    }
+            }());
+            icon.addEventListener(
+                'mouseover',
+                function() {
+                    var icon_func = icon_rows[i].getElementsByTagName("img")[0];
+                    var desc = desc_rows[i];
+                    var desc_top = getOffset(desc).top;
+                    var desc_left = getOffset(desc).left;
+                    return function() {
+                        var icon_top = getOffset(icon_func).top;
+                        var icon_left = getOffset(icon_func).left;
+                        var translate_x = icon_left - desc_left - desc.offsetWidth - 10;
+                        var translate_y = icon_top - desc_top + 0.5 * icon_func.offsetHeight - 0.5 * desc.offsetHeight;
+                        desc.style.transform = "translate(" + translate_x.toString() + "px," + translate_y.toString() + "px)";
+                        desc.style.visibility = "visible";
+                    }
+            }());
+            document.addEventListener(
+                'scroll', 
+                function() {
+                    var icon_func = icon_rows[i].getElementsByTagName("img")[0];
+                    var desc = desc_rows[i];
+                    var desc_top = getOffset(desc).top;
+                    var desc_left = getOffset(desc).left;
+                    return function() {
+                        var icon_top = getOffset(icon_func).top;
+                        var icon_left = getOffset(icon_func).left;
+                        var translate_x = icon_left - desc_left - desc.offsetWidth - 10;
+                        var translate_y = icon_top - desc_top + 0.5 * icon_func.offsetHeight - 0.5 * desc.offsetHeight;
+                        desc.style.transform = "translate(" + translate_x.toString() + "px," + translate_y.toString() + "px)";
+                    }
+            } ());
+        }
+    </script>
+</body>
+
+</html>

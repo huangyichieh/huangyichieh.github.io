@@ -1,0 +1,425 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css?family=Fredericka+the+Great:400,800" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Josefin+Slab:400,800" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=EB+Garamond:400,800" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Lato:400,800" rel="stylesheet">
+    <link rel=stylesheet type="text/css" href="../topic_style.css">
+
+    <!-- for code block -->
+    <link rel="stylesheet"
+        href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.6.0/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.6.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <title>Web Front-end Learning</title>
+</head>
+
+<body>
+    <header>
+        <div class="inner_header">
+            <div class="logo_container">
+                <h1>Web Front-end Learning</h1>
+            </div>
+
+            <ul class="navigation">
+                <a href="../inedx.html"><li>Home</li></a>
+            </ul>
+        </div>
+    </header>
+
+    <div class="table_content">
+        <div class="section_shortcuts">
+            <h1>Sections</h1>
+            <div class="shortcuts">
+                <a href="#html">HTML</a>
+            </div>
+            
+            <div class="shortcuts">
+                <a href="#css">CSS</a>
+            </div>
+
+            <div class="shortcuts">
+                <a href="#js">Javascript</a>
+            </div>
+
+            <div class="shortcuts">
+                <a href="#projects">Projects</a>
+            </div>
+            
+            <div class="shortcuts">
+                <a href="#reference">Reference</a>
+            </div>
+        </div>
+
+        <!-- Section: HTML -->
+        <div class="section_content" id="html">
+            <h1>HTML</h1>
+
+            <h2>Using &ltspan&gt vs &ltdiv&gt inside &ltp&gt</h2>
+            <p>Using &ltdiv&gt inside a paragraph &ltp&gt will force a new line. 
+                If you don't want to force a new line(for example adding style to 
+                a code block or directory path), use &ltspan&gt to avoid the new line.</p>
+        </div>
+
+        <!-- Section: CSS -->
+        <div class="section_content" id="css">
+            <h1>CSS</h1>
+
+            <h2>Class and id</h2>
+            <p>Both id selector and class selector is used to point to a specific 
+            style sheet or used by Javascript to access and manipulate the element 
+            of specific id. Example of how to use class selector and id selector 
+            are shown below:</p>
+<pre>
+<code class="css">/*id selector style the element with id="id_name"*/
+#id_name {
+    background-color: yellow;
+}
+
+/*class selector style all elements with class="class_name"*/
+.class_name {
+    background-color: yellow;
+}
+</code>
+</pre>
+            <p>While <i>id</i> attribute is used to uniquely identify an HTML 
+            element, which means it cannot be assigned to more than one element;
+            <i>class</i> attribute can be used by multiple HTML elements.</p>
+            
+            <h2>Interaction between CSS table layout and margin</h2>
+            <p>Note that when you use <code>display:table-row</code>, the height 
+            of the DIV is solely determined by height of <code>display:table-cell</code>. 
+            In another words, margin, padding, and border-spacing does not work on
+            height of the DIV <code>display:table-row</code>.</p>
+            <p>To minimize such problem, the recommended way of use table layout 
+            will be a complete set of <code>display:table</code> containing DIVs 
+            of <code>display:table-row</code>, with DIV <code>display:table-row</code>
+            containing DIVs of <code>display:table-cell</code>. Even though you 
+            only need one <code>display:table-cell</code> in each 
+            <code>display:table-row</code>, this will make the height of each 
+            element much easier to control.</p>
+
+            <h2>Vertical centering in css</h2>
+            <p>Note that</p>
+            <li><b><div class="code_line">vertical-align: middle</div> is not 
+            applicable to block-level elements.</b></li>
+            <li><b><div class="code_line">margin-top: auto</div> and <div class="code_line">margin-bottom: auto</div>
+            is not applicable because it will compute both value as 0.</b></li>
+            <li><b><div class="code_line">margin-top: -50%</div> is not applicable 
+            because percentage-based margin values are calculated as relative percentage 
+            of the width of containing block.</b></li>
+            <p>The solutions below will be modified based on this example:</p>
+<pre>
+<code class="html">&ltdiv style="height: 60px; background-color: lightgreen;"&gt
+    &ltdiv style="background-color: darksalmon;"&gt
+        This text should be at the center
+    &lt/div&gt
+&lt/div&gt
+</code>
+</pre>
+            <p>Preview:</p>
+            <div style="height: 60px; background-color: lightgreen;">
+                <div style="background-color: darksalmon;">
+                    This text should be at the center
+                </div>
+            </div>
+
+            <h3>Method 1: line-height equals to height of element</h3>
+            <p>This method is suitable to center one-line text.</p>
+<pre>
+<code class="html">&ltdiv style="height: 60px; background-color: lightgreen;"&gt
+    &ltdiv style="line-height: 60px; background-color: darksalmon;"&gt
+        This text should be at the center
+    &lt/div&gt
+&lt/div&gt
+</code>
+</pre>
+            <p>Preview:</p>
+            <div style="height: 60px; background-color: lightgreen;">
+                <div style="line-height: 60px; background-color: darksalmon;">
+                    This text should be at the center
+                </div>
+            </div>
+
+            <h3>Method 2: Flexbox</h3>
+            <p>A single flex-child can be made to center in a flex-parent. This 
+            only work if the flex container has a fixe height.</p>
+<pre>
+<code class="html">&ltdiv style="
+    height: 60px; 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
+    background-color: lightgreen;"&gt
+    &ltdiv style="line-height: 60px; background-color: darksalmon;"&gt
+        This text should be at the center
+    &lt/div&gt
+&lt/div&gt
+</code>
+</pre>
+            <p>Preview:</p>
+            <div style="
+                height: 60px; 
+                display: flex; 
+                flex-direction: column; 
+                justify-content: center; 
+                background-color: lightgreen;">
+                <div style="background-color: darksalmon;">
+                    This text should be at the center
+                </div>
+            </div>
+
+            <h3>Method 3: Transform half of height</h3>
+            <p>Center by nudging it up half of it's height after bumping it down halfway.</p>
+<pre>
+<code class="html">&ltdiv style="position: relative; height: 60px; background-color: lightgreen;"&gt
+    &ltdiv style="
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: darksalmon;"&gt
+        This text should be at the center
+    &lt/div&gt
+&lt/div&gt
+</code>
+</pre>
+            <p>Preview:</p>
+            <div style="position: relative; height: 60px; background-color: lightgreen;">
+                <div style="
+                    position: absolute;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    background-color: darksalmon;">
+                    This text should be at the center
+                </div>
+            </div>
+        </div>
+        
+        <!-- Section: CSS -->
+        <div class="section_content" id="js">
+            <h1>Javascript</h1>
+
+            <h2>Callbacks variable scope problem</h2>
+            <p>First we look at an example</p>
+<pre>
+<code>var array = [ ... ]; // An array with some objects
+for( var i = 0; i < array.length; ++i )
+{
+    $.doSthWithCallbacks( function() {
+    array[i].something = 42;
+    });
+}
+</code>
+</pre>
+            <p>While the code looks perfectly fine, it shows the misunderstanding 
+            of a very basic JavaScript concept. JavaScript is asynchronous, meaning
+            under certain circumstances code might not be executed sequentially. 
+            The <span class="code_line">doSthWithCallbacks</span> schedules the callback 
+            function to be executed at later stage. Since the for loop is not just 
+            scheduling one callback but <span class="code_line">array.length</span>
+            numbers of callbacks, the callbacks will not be completed in single for 
+            loop iteration. Each of these callbacks will be executed at unpredictable 
+            time later on. Usually, it will be executed until the for loop has completed, 
+            with <span class="code_line">i</span> equals <span class="code_line">array.length - 1</span>.</p>
+            <p>A recommended solution to the problem is to create a separate callback 
+            function with their own copy of the value <span class="code_line">i</span> 
+            in a scope only available to them. There are two ways to achieve this.
+            The first one is easier to understand, and the second one provide better 
+            readability.</p>
+            <h3>Closure in a function</h3>
+<pre>
+<code>var array = [ ... ]; // An array with some objects
+
+function callbackClosure(i, callback) {
+    return function() {
+    return callback(i);
+    }
+}
+
+for( var i = 0; i < array.length; ++i )
+{
+    API.doSthWithCallbacks( callbackClosure( i, function(i) {
+    array[i].something = 42;
+    }) );
+}
+</code>
+</pre>
+            <p>This method is easier to understand. The <span class="code_line">callbackClosure</span>
+            function returns a function that invokes the actual callback with an 
+            explicit copy of <span class="code_line">i</span> as an argument. Since
+            each function declares it's own scope and <span class="code_line">i</span>
+            has a base atomic type <span class="code_line">int</span>, <span class="code_line">i</span>
+            will not be passed as a reference but as a copy.</p>
+            <h3>Inline closure</h3>
+<pre>
+<code>var array = [ ... ]; // An array with some objects
+for( var i = 0; i < array.length; ++i )
+{
+    API.doSthWithCallbacks( (function() {
+    var j = i; // j is a copy of i only available to the scope of the inner function
+    return function() {
+        array[j].something = 42;
+    }
+    })() );
+}
+</code>
+</pre>
+            <p>Notice that the outer function is only used for encapsulating the 
+            inner function, and creating a separate variable scope for the inner 
+            function. Also, it still returns a <span class="code_line">Function</span>
+            as it should be.</p>
+            <h3>ES6</h3>
+<pre>
+<code>var array = [ ... ]; // An array with some objects
+for( let i = 0; i < array.length; ++i )
+{
+    $.doSthWithCallbacks( function() {
+    array[i].something = 42;
+    });
+}
+</code>
+</pre>
+            <p>ECMAScript 6 introduces the let keyword which allows you to declare 
+            a variable scoped to the nearest enclosing block and not global like 
+            <span class="code_line">var</span> does.</p>
+        </div>
+
+        <!-- Section: Projects -->
+        <div class="section_content" id="projects">
+            <h1>Projects</h1>
+        </div>
+
+        <!-- Section: Reference -->
+        <div class="section_content" id="reference">
+            <h1>Reference</h1>
+
+            <h2>Class and id</h2>
+            <li><a href="https://www.w3schools.com/cssref/sel_class.asp">
+                https://www.w3schools.com/cssref/sel_class.asp</a></li>
+            <li><a href="https://www.w3schools.com/cssref/sel_id.asp">
+                https://www.w3schools.com/cssref/sel_id.asp</a></li>
+            <li><a href="https://www.w3schools.com/html/html_classes.asp">
+                https://www.w3schools.com/html/html_classes.asp</a></li>
+            <li><a href="https://www.w3schools.com/html/html_id.asp">
+                https://www.w3schools.com/html/html_id.asp</a></li>
+
+            <h2>Interaction between CSS table layout and margin</h2>
+            <li><a href="https://stackoverflow.com/questions/1993277/css-table-layout-why-does-table-row-not-accept-a-margin">
+                https://stackoverflow.com/questions/1993277/css-table-layout-why-does-table-row-not-accept-a-margin</a></li>
+
+            <h2>Vertical centering in css</h2>
+            <li><a href="https://stackoverflow.com/questions/12415661/using-marginauto-to-vertically-align-a-div">
+                https://stackoverflow.com/questions/12415661/using-marginauto-to-vertically-align-a-div</a></li>
+            <li><a href="https://css-tricks.com/centering-css-complete-guide/">
+                https://css-tricks.com/centering-css-complete-guide/</a></li>
+
+            <h2>Callbacks variable scope problem</h2>
+            <li><a href="https://www.pluralsight.com/guides/javascript-callbacks-variable-scope-problem">
+                https://www.pluralsight.com/guides/javascript-callbacks-variable-scope-problem</a></li>
+        </div>
+    </div>
+    
+    <!-- For shortcut icons -->
+    <div class="float_icon_table noselect">
+        <div class="float_icon_row">
+            <img src="../topics_icon.svg" class="float_icon" id="topics_icon" onclick="displaySections();"/>
+            <ul style="display: none;" id="section_menu">
+            </ul>
+            <script>
+                // Configure section menu
+                var section_menu = document.getElementById("section_menu");
+                var shorcut_collection = document.getElementsByClassName("shortcuts");
+                for (let shortcut of shorcut_collection) {
+                    var section_name = shortcut.childNodes[1].innerHTML;
+                    var li = document.createElement("li");
+                    var a = document.createElement("a");
+                    a.appendChild(document.createTextNode(section_name));
+                    a.href = shortcut.childNodes[1].href;
+                    li.appendChild(a);
+                    section_menu.appendChild(li);
+                }
+
+                // Show or hide section menu when clicked
+                function displaySections() {
+                    if (section_menu.style.display === 'none') {
+                        section_menu.style.display = "block";
+                    } 
+                    else {
+                        section_menu.style.display = "none";
+                    }
+                }
+                
+                window.addEventListener('click', function(e){
+                    // Clicked outside the topics_icon
+                    if (!document.getElementById('topics_icon').contains(e.target)){
+                        section_menu.style.display = "none";
+                    }
+                });
+            </script>
+        </div>
+        <div class="float_icon_row">
+            <img src="../top_icon.svg" class="float_icon" onclick="location.href='#';"/>
+        </div>
+    </div>
+    <div class="icon_desc">Bookmark</div>
+    <div class="icon_desc">Top</div>
+    <script>
+        function getOffset(el) {
+            const rect = el.getBoundingClientRect();
+            return {
+                left: rect.left + window.scrollX,
+                top: rect.top + window.scrollY
+            };
+        }
+        var icon_table = document.getElementsByClassName("float_icon_table")[0];
+        var icon_rows = icon_table.getElementsByClassName("float_icon_row");
+        var desc_rows = document.getElementsByClassName("icon_desc");
+        for(var i = 0; i < icon_rows.length; i++) {
+            var icon = icon_rows[i].getElementsByTagName("img")[0];
+            
+            icon.addEventListener(
+                'mouseleave',
+                function() {
+                    var desc = desc_rows[i];
+                    return function() {
+                        desc.style.visibility = "hidden";
+                    }
+            }());
+            icon.addEventListener(
+                'mouseover',
+                function() {
+                    var icon_func = icon_rows[i].getElementsByTagName("img")[0];
+                    var desc = desc_rows[i];
+                    var desc_top = getOffset(desc).top;
+                    var desc_left = getOffset(desc).left;
+                    return function() {
+                        var icon_top = getOffset(icon_func).top;
+                        var icon_left = getOffset(icon_func).left;
+                        var translate_x = icon_left - desc_left - desc.offsetWidth - 10;
+                        var translate_y = icon_top - desc_top + 0.5 * icon_func.offsetHeight - 0.5 * desc.offsetHeight;
+                        desc.style.transform = "translate(" + translate_x.toString() + "px," + translate_y.toString() + "px)";
+                        desc.style.visibility = "visible";
+                    }
+            }());
+            document.addEventListener(
+                'scroll', 
+                function() {
+                    var icon_func = icon_rows[i].getElementsByTagName("img")[0];
+                    var desc = desc_rows[i];
+                    var desc_top = getOffset(desc).top;
+                    var desc_left = getOffset(desc).left;
+                    return function() {
+                        var icon_top = getOffset(icon_func).top;
+                        var icon_left = getOffset(icon_func).left;
+                        var translate_x = icon_left - desc_left - desc.offsetWidth - 10;
+                        var translate_y = icon_top - desc_top + 0.5 * icon_func.offsetHeight - 0.5 * desc.offsetHeight;
+                        desc.style.transform = "translate(" + translate_x.toString() + "px," + translate_y.toString() + "px)";
+                }
+            } ());
+        }
+    </script>
+</body>
+
+</html>

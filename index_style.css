@@ -1,0 +1,157 @@
+*{
+    border-spacing: 0;
+    margin: 0;
+    padding: 0;
+}
+
+/*Background*/
+body {
+    background-color: rgb(255, 255, 255);
+}
+
+/*For site header*/
+header {
+    width: 100%;
+    height: 80px;
+    display: block;
+    background-color: rgb(40, 40, 40);
+}
+
+.float_icon_table{
+    width: auto;
+    height: auto;
+	display: table;
+    position: fixed;
+    border-spacing: 15px;
+    bottom: 25px;
+	right: 25px;
+}
+
+.float_icon_row{
+    display: table-row;
+}
+
+.float_icon{
+	display: table-cell;
+    width: 50px;
+	height: 50px;
+	border-radius: 50px;
+    transition-property: all;
+    transition-duration: 0.2s;
+	box-shadow: 3px 3px 4px #999;
+}
+
+.float_icon img{
+    width: 50px;
+	height: 50px;
+	border-radius: 50px;
+}
+
+.float_icon:hover{
+    -webkit-transform: scale(1.2);
+}
+
+.icon_desc{
+    width: auto;
+    height: auto;
+    visibility: hidden;
+    font-family: monospace;
+    padding: 3px;
+    border-radius: 10%;
+    background-color: white;
+    border-style: solid;
+    border-width: 1px;
+    border-color: rgb(170, 170, 170);
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    transition-property: all;
+}
+
+.inner_header {
+    width: 70%;
+    height: 100%;
+    display: block;
+    margin: 0 auto;
+}
+
+.logo_container{
+    height: 100%;
+    display: table;
+    float: left;
+}
+
+.logo_container h1{
+    color: white;
+    height: 100%;
+    display: table-cell;
+    vertical-align: middle;
+    font-family: 'Fredericka the Great';
+    font-size: 40px;
+    font-weight: 200;
+}
+
+.navigation{
+    float: right;
+    height: 100%;
+}
+
+.navigation a{
+    height: 100%;
+    display: table;
+    float: left;
+    padding-top: 30px;
+}
+
+.navigation a li{
+    display: table-cell;
+    vertical-align: middle;
+    height: 100%;
+    color: white;
+    font-family: 'Fredericka the Great';
+    font-size: 16px;
+}
+
+.table_content{
+    width: 70%;
+    height: auto;
+    display: table;
+    margin-left: 15%;
+    margin-right: 15%;
+    padding-top: 20px;
+    border-spacing: 20px;
+    /* background-color: gray; */
+}
+
+.topic_row{
+    width: 100%;
+    height: auto;
+    display: table-row;
+}
+
+.topic_block{
+    height: auto;
+    display: table-cell;
+    color: black;
+    padding-top: 20px;
+    padding-left: 2%;
+    padding-right: 2%;
+    padding-bottom: 10px;
+    background-color: whitesmoke;
+    box-shadow: 0px 0px 10px gray;
+}
+
+.topic_block a{
+    font-size: 30px;
+    color: lightseagreen;
+    font-family: 'Josefin Slab';
+    font-weight: 800;
+}
+
+.topic_block p{
+    font-size: 20px;
+    color: black;
+    padding-left: 10px;
+    font-family: 'Josefin Slab';
+    font-weight: 400;
+}

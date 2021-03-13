@@ -1,0 +1,541 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css?family=Fredericka+the+Great:400,800" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Josefin+Slab:400,800" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=EB+Garamond:400,800" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Lato:400,800" rel="stylesheet">
+    <link rel=stylesheet type="text/css" href="../topic_style.css">
+    
+    <!-- for code block -->
+    <link rel="stylesheet"
+        href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.6.0/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.6.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <title>Bpy Fundamentals</title>
+</head>
+
+<body>
+    <header>
+        <div class="inner_header">
+            <div class="logo_container">
+                <h1>Bpy Fundamentals</h1>
+            </div>
+
+            <ul class="navigation">
+                <a href="../inedx.html"><li>Home</li></a>
+            </ul>
+        </div>
+    </header>
+    
+    <div class="table_content">
+        <div class="section_shortcuts">
+            <h1>Sections</h1>
+            <div class="shortcuts">
+                <a href="#intro">Introduction</a>
+            </div>
+
+            <div class="shortcuts">
+                <a href="#torus">Example 1: Parametric Torus</a>
+            </div>
+            
+            <div class="shortcuts">
+                <a href="#metaball">Example 2: Metaballs</a>
+            </div>
+
+            <div class="shortcuts">
+                <a href="#voronoi_land">Example 3: Vorornoi Landscape</a>
+            </div>
+            
+            <div class="shortcuts">
+                <a href="#tetrahedron_fractal">Example 4: Tetrahedron Fractal</a>
+            </div>
+
+            <div class="shortcuts">
+                <a href="#reference">Reference</a>
+            </div>
+        </div>
+
+        <!--Section: Introduction-->
+        <div class="section_content" id="intro">
+            <h1>Introduction</h1>
+            <p>The study from this page are based on Blender 2.83.</p>
+            <p><a href="https://github.com/njanakiev/blender-scripting#resources">
+                This</a> website from the references below wrote its examples based 
+                on Blender 2.6x, the updated code for Blender 2.83 will provided 
+                in this page.</p>
+            <p>Some functions in the code are used multiple times, and will be 
+                explained only once when first encountered.</p>
+                
+            <h2>How to run Blender script</h2>
+            <p>There are two ways to run python script in Blender:</p>
+            <li>From command line:</li>
+            <div class="cmd_line">blender.exe --python [python_file_path]</div>
+            <p></p>
+            <li>From Blender:</li>
+            <img src="./blender_text_editor.png" width=100%>
+            <p>Open blender scripting workspace.</p><p></p>
+            <img src="./blender_text_editor_browse.png" width=100%>
+            <p>Add new code or open one from your disk.</p><p></p>
+            <img src="./blender_text_editor_opened.png" width=100%>
+            <p>Click "Run" icon to execute the code.</p><p></p>
+            
+            <h2>How to add python modules</h2>
+            <p>According to bpy official docs, there are four ways to import modules:</p>
+            <ol>
+                <li><span class="code_line">import some_modules</span> command from 
+                    text-editor or interacitve console.</li>
+                <li>Open as text data-block and check the <i>Register</i> option.</li>
+                <li>Copy into the directory <span class="code_line">scripts/startup</span>, 
+                    where they will be automatically imported on startup.</li>
+                <li>Define as an add-on, enabling the add-on will load it as a python module.</li>
+            </ol>
+            <p>The second method has been tested, but does not work.</p>
+            <p>In addition, using the first method will encounter an issue that the 
+                path of the directory of the python files are not included in the 
+                system path. For example:</p>
+            <p>If you want to import module with path <span class="code_line">my_bpy_dir/utils.py</span> 
+                when running command:<br>
+                <span class="code_line">blender_dir/blender.exe --python my_bpy_dir/bpy_test.py</span><br>
+                Note that the current working directory is not <span class="code_line">my_bpy_dir</span>,
+                thus any modules under this directory will not be able to import.</p>
+            <p>Since the other options are troublesome for testing, a simple hack 
+                to this problem is to add the directory of the bpy files into system 
+                path. Illustrated below:</p>
+<pre>
+<code class="python">import bpy
+import sys
+import os
+blend_dir = os.path.basename(bpy.data.filepath)
+if blend_dir not in sys.path:
+    sys.path.append(blend_dir)
+import utils #utils.py is the module we want to import
+</code>
+</pre>
+
+
+            <h2>Changes in Blender bpy for 2.80+</h2>
+            <h3>"Lamp" object is replaced by "Light" object</h3>
+            <p>Blender bpy 2.6X type of object:</p>
+            <code>enum in [‘MESH’, ‘CURVE’, ‘SURFACE’, ‘META’, ‘FONT’, ‘ARMATURE’, ‘LATTICE’, ‘EMPTY’, ‘CAMERA’, ‘LAMP’, ‘SPEAKER’]</code>
+            <p>Blender bpy 2.8X type of object:</p>
+            <code>enum in [‘MESH’, ‘CURVE’, ‘SURFACE’, ‘META’, ‘FONT’, ‘HAIR’, ‘POINTCLOUD’, ‘VOLUME’, ‘GPENCIL’, ‘ARMATURE’, ‘LATTICE’, ‘EMPTY’, ‘LIGHT’, ‘LIGHT_PROBE’, ‘CAMERA’, ‘SPEAKER’]</code>
+            <h3>linking objects to scene</h3>
+<pre>
+<code class="diff">- bpy.context.scene.objects.link
++ bpy.context.collection.objects.link
+</code>
+</pre>
+            <h3>Setting objects to active</h3>
+<pre>
+<code class="diff">- bpy.context.scene.objects.active = ob
++ bpy.context.view_layer.objects.active = ob
+</code>
+</pre>
+            <h3>Objects to mesh</h3>
+<pre>
+<code class="diff">+ obj.to_mesh(bpy.context.depsgraph, apply_modifiers=bool, calc_undeformed=bool)
+</code>
+</pre>
+            <h3>Selecting objects</h3>
+<pre>
+<code class="diff">- object.select
++ object.select_get()
++ object.select_set()
+</code>
+</pre>
+        </div>
+
+        <!-- Section: Paramteric Torus -->
+        <div class="section_content" id="torus">
+            <h1>Example 1: Parametric Torus</h1>
+            <p>This is an example of adding a parametric torus to the scene, and 
+                render it as an image.</p>
+            <img src="./torus_result.png" width=50% class="center">
+            <h2>Main</h2>
+            <img src="./torus_main.png" width=30% class="center">
+            <h2>utils.removeAll(<i>type</i>)</h2>
+            <p>Delete all object with specific type.</p>
+            <p><i>type</i>: Type of objects to delete, else delete objects of all type if <i>type</i> is <i>None</i></p>
+<pre>
+<code class="python">def removeAll(type=None):
+    # Possible type: ‘MESH’, ‘CURVE’, ‘SURFACE’, ‘META’, ‘FONT’, ‘HAIR’, ‘POINTCLOUD’, ‘VOLUME’, ‘GPENCIL’, 
+    # ‘ARMATURE’, ‘LATTICE’, ‘EMPTY’, ‘LIGHT’, ‘LIGHT_PROBE’, ‘CAMERA’, ‘SPEAKER’
+    if type:
+        bpy.ops.object.select_all(action='DESELECT')
+        bpy.ops.object.select_by_type(type=type)
+        bpy.ops.object.delete()
+    else:
+        # Remove all elements in scene
+        bpy.ops.object.select_all(action="SELECT")
+        bpy.ops.object.delete(use_global=False)
+</code>
+</pre>
+            <h2>utils.target(<i>origin</i>)</h2>
+            <p>Set a target where camera is viewing to.</p>
+            <p><i>origin</i>: Position of the viewing target.</p>
+<pre>
+<code class="python">def target(origin=(0,0,0)):
+    tar = bpy.data.objects.new('Target', None)
+    bpy.context.collection.objects.link(tar)
+    tar.location = origin
+
+    return tar
+</code>
+</pre>
+            <h2>utils.camera(<i>origin</i>, <i>target</i>, <i>lens</i>, <i>clip_start</i>, 
+                <i>clip_end</i>, <i>type</i>, <i>ortho_scale</i>)</h2>
+                <p>Create a camera object.</p>
+                <p><i>origin</i>: Position of the camera.<br>
+                <i>target</i>: Target where the camera is viewing to.<br>
+                <i>lens</i>: Perspective camera lens value in millimeters(float in [1, inf]).<br>
+                <i>clip_start</i>: Near clipping distance.<br>
+                <i>clip_end</i>: Far clipping distance.<br>
+                <i>type</i>: Camera types(enum in [‘PERSP’, ‘ORTHO’, ‘PANO’]).<br>
+                <i>ortho_scale</i>: Orthographic camera scale, similar effect as zoom(float in [0, inf]).<br>
+                </p>
+<pre>
+<code class="python">def camera(origin, target=None, lens=35, clip_start=0.1, clip_end=200, type='PERSP', ortho_scale=6):
+    # Create object and camera
+    camera = bpy.data.cameras.new("Camera")
+    camera.lens = lens
+    camera.clip_start = clip_start
+    camera.clip_end = clip_end
+    camera.type = type # 'PERSP', 'ORTHO', 'PANO'
+    if type == 'ORTHO':
+        camera.ortho_scale = ortho_scale
+
+    # Link object to scene
+    obj = bpy.data.objects.new("CameraObj", camera)
+    obj.location = origin
+    bpy.context.collection.objects.link(obj)
+    bpy.context.scene.camera = obj # Make this the current camera
+
+    if target: trackToConstraint(obj, target)
+    return obj
+</code>
+</pre>
+            <h2>utils.rainbowLights(<i>r</i>, <i>n</i>, <i>freq</i>, <i>energy</i>)</h2>
+            <p>Create a rainbow light in 3D space.</p>
+            <p><i>n</i>: Number of point lights.<br>
+            <i>energy</i>: Light energy emitted over the entire area of the light in all directions(float in [-inf, inf]).<br>
+            </p>
+            <img src="./rainbowlight_setup.png" width=50% class="center">
+<pre>
+<code class="python">def rainbowLights(r=5, n=100, freq=2, energy=0.1):
+    for i in range(n):
+        t = float(i)/float(n)
+        pos = (r*sin(tau*t), r*cos(tau*t), r*sin(freq*tau*t))
+
+        # Create light
+        bpy.ops.object.add(type='LIGHT', location=pos)
+        obj = bpy.context.object
+        obj.data.type = 'POINT'
+
+        # Apply gamma correction for Blender
+        color = tuple(pow(c, 2.2) for c in colorsys.hsv_to_rgb(t, 0.6, 1))
+
+        # Set HSV color and light energy
+        obj.data.color = color
+        obj.data.energy = energy
+</code>
+</pre>
+            <h2>createSurface(<i>surface</i>, <i>n</i>, <i>m</i>, <i>origin</i>, <i>name</i>)</h2>
+            <p>Create a vertices and faces for torus surface.</p>
+            <p><i>surface</i>: Surface function that generate a 3D coordinate given 
+            a coordinate of 2D grid mesh. This follows the formula of torus: 
+            <img src="./torus_formula.png" width=40% class="center"><br>
+            <i>n</i>: Number of rows of grid mesh.<br>
+            <i>m</i>: Number of columns of grid mesh.<br>
+            <i>origin</i>: Position of the center of torus.<br>
+            <i>name</i>: Name for the torus mesh.<br></p>
+<pre>
+<code class="python">TAU = 2*pi
+    
+# Create a function for the u, v surface parameterization from r0 and r1
+def torusSurface(r0, r1):
+    def surface(u, v):
+        point = ((r0 + r1*cos(TAU*v))*cos(TAU*u), \
+                    (r0 + r1*cos(TAU*v))*sin(TAU*u), \
+                    r1*sin(TAU*v))
+        return point
+    return surface
+
+# Create an object from a surface parameterization
+def createSurface(surface, n=10, m=10, origin=(0,0,0), name='Surface'):
+    verts = list()
+    faces = list()
+
+    # Create uniform n by m grid
+    for col in range(m):
+        for row in range(n):
+            u = row / n
+            v = col / m
+
+            # Surface parameterization
+            point = surface(u, v)
+            verts.append(point)
+
+            # Connect first and last vertices on the u and v axis
+            rowNext = (row + 1) % n
+            colNext = (col + 1) % m
+            # Indices for each qued
+            faces.append(((col*n) + rowNext, (colNext*n) + rowNext, (colNext*n) + row, (col*n) + row))
+
+    print('verts : ' + str(len(verts)))
+    print('faces : ' + str(len(faces)))
+
+    # Create mesh and object
+    mesh = bpy.data.meshes.new(name+'Mesh')
+    obj  = bpy.data.objects.new(name, mesh)
+    obj.location = origin
+    # Link object to scene
+    bpy.context.collection.objects.link(obj)
+    # Create mesh from given verts and faces
+    mesh.from_pydata(verts, [], faces)
+    #Update mesh with new data
+    mesh.update(calc_edges=True)
+    return obj
+</code>
+</pre>
+            <h2>utils.setSmooth(<i>object</i>, <i>level</i>, <i>smooth</i>)</h2>
+            <p>Modify an object to make its surface looks smoother.</p>
+            <p><i>obj</i>: Object to be smooth.<br>
+            <i>level</i>: Number of subdivisions to perform(int in [0, 11]).<br>
+            <i>smooth</i>: Smoothen edges of the mesh.</p>
+<pre>
+<code class="python">def setSmooth(obj, level=None, smooth=True):
+    if level:
+        # Add subsurf modifier
+        modifier = obj.modifiers.new('Subsurf', 'SUBSURF')
+        modifier.levels = level
+        modifier.render_levels = level
+
+    # Smooth surface
+    mesh = obj.data
+    for p in mesh.polygons:
+        p.use_smooth = smooth
+</code>
+</pre>
+            <p>The smooth process include two operations. First operation divides 
+            surface into smaller surface equally; the second one smoothen the edges 
+            of the mesh.</p>
+            <h2>utils.renderToFolder(<i>renderFolder</i>, <i>renderName</i>, <i>resX</i>,
+                <i>resY</i>, <i>resPercentage</i>, <i>surface</i>, <i>animation</i>, <i>frame_end</i>)</h2>
+            <p>Render a scene as an image or a video.</p>
+            <p><i>renderFolder</i>: Path of desired render directory.<br>
+            <i>renderName</i>: Desired name for render file.<br>
+            <i>resX</i>: Resolution for width.<br>
+            <i>resY</i>: Resolution for height.<br>
+            <i>resPercentage</i>: Percentage for render resolution.<br>
+            <i>Animation</i>: <i>True</i> for rendering a video, <i>False</i> for rendering image.<br>
+            <i>frame_end</i>: Final frame of rendering range.<br></p>
+<pre>
+<code class="python">def renderToFolder(
+    renderFolder='rendering', renderName='render', resX=800, resY=800, 
+    resPercentage=100, animation=False, frame_end=None
+):
+    print('renderToFolder called')
+    scn = bpy.context.scene
+    scn.render.resolution_x = resX
+    scn.render.resolution_y = resY
+    scn.render.resolution_percentage = resPercentage
+    if frame_end:
+        scn.frame_end = frame_end
+
+    print(bpy.context.space_data)
+
+    # Check if script is executed inside Blender
+    if bpy.context.space_data is None:
+        # Specify folder to save rendering and check if it exists
+        render_folder = os.path.join(os.getcwd(), renderFolder)
+        if(not os.path.exists(render_folder)):
+            os.mkdir(render_folder)
+
+        if animation:
+            # Render animation
+            scn.render.filepath = os.path.join(
+                render_folder,
+                renderName)
+            bpy.ops.render.render(animation=True)
+        else:
+            # Render still frame
+            scn.render.filepath = os.path.join(
+                render_folder,
+                renderName + '.png')
+            bpy.ops.render.render(write_still=True)
+</code>
+</pre>
+        </div>
+
+        <!-- Section: Metaballs -->
+        <div class="section_content" id="metaball">
+            <h1>Example 2: Metaballs</h1>
+            <p>This is an example of adding metaballs to the scene, and render 
+                it as an image.</p>
+            <img src="./metaballs_result.png" width=50% class="center">
+            <h2>Main</h2>
+            <img src="./metaball_main.png" width=30% class="center">
+            <h2>createMetaball(<i>origin</i>, <i>n</i>, <i>r0</i>, <i>r1</i>)</h2>
+            <p>Generate metaballs object with random pattern.</p>
+            <p><i>origin</i>: Center of random pattern.<br>
+            <i>n</i>: Number of metaballs.<br>
+            <i>r0</i>: Far range of random pattern.
+            <i>r1</i>: Near range of random pattern.</p>
+<pre>
+<code class="python">def createMetaball(origin=(0, 0, 0), n=30, r0=4, r1=2.5):
+    metaball = bpy.data.metaballs.new('MetaBall')
+    obj = bpy.data.objects.new('MetaBallObject', metaball)
+    bpy.context.collection.objects.link(obj)
+
+    metaball.resolution = 0.2
+    metaball.render_resolution = 0.05
+
+    for i in range(n):
+        location = Vector(origin) + Vector(random.uniform(-r0, r0) for i in range(3))
+
+        element = metaball.elements.new()
+        element.co = location
+        element.radius = r1
+
+    return metaball
+</code>
+</pre>
+        </div>
+
+        <!-- Section: Voronoi Landscape -->
+        <div class="section_content" id="voronoi_land">
+            <h1>Example 3: Voronoi Landscape</h1>
+        </div>
+
+        <!-- Section: Tetrahedron Fractal -->
+        <div class="section_content" id="tetrahedron_fractal">
+            <h1>Example 4: Tetrahedron Fractal</h1>
+        </div>
+
+        <!-- Section: Reference -->
+        <div class="section_content" id="reference">
+            <h1>Reference</h1>
+            <h2>Introduction</h2>
+            <li><a href="https://docs.blender.org/api/current/info_overview.html">
+                https://docs.blender.org/api/current/info_overview.html</a></li>
+            <li><a href="https://blenderscripting.blogspot.com/">
+                https://blenderscripting.blogspot.com/</a></li>
+            
+            <h2>Docs and wiki</h2>
+            <li><a href="https://docs.blender.org/api/current/bpy.ops.html">
+                https://docs.blender.org/api/current/bpy.ops.html</a></li>
+            <li><a href="https://en.wikibooks.org/wiki/Blender_3D:_Noob_to_Pro/Python_Scripting">
+                https://en.wikibooks.org/wiki/Blender_3D:_Noob_to_Pro/Python_Scripting</a></li>
+
+            <h2>Code samples</h2>
+            <li><a href="https://github.com/njanakiev/blender-scripting#resources">
+                https://github.com/njanakiev/blender-scripting#resources</a></li>
+            <li><a href="https://medium.com/@behreajj/creative-coding-in-blender-a-primer-53e79ff71e">
+                https://medium.com/@behreajj/creative-coding-in-blender-a-primer-53e79ff71e</a></li>
+        </div>
+    </div>
+
+    <!-- For shortcut icons -->
+    <div class="float_icon_table noselect">
+        <div class="float_icon_row">
+            <img src="../topics_icon.svg" class="float_icon" id="topics_icon" onclick="displaySections();"/>
+            <ul style="display: none;" id="section_menu">
+            </ul>
+            <script>
+                // Configure section menu
+                var section_menu = document.getElementById("section_menu");
+                var shorcut_collection = document.getElementsByClassName("shortcuts");
+                for (let shortcut of shorcut_collection) {
+                    var section_name = shortcut.childNodes[1].innerHTML;
+                    var li = document.createElement("li");
+                    var a = document.createElement("a");
+                    a.appendChild(document.createTextNode(section_name));
+                    a.href = shortcut.childNodes[1].href;
+                    li.appendChild(a);
+                    section_menu.appendChild(li);
+                }
+
+                // Show or hide section menu when clicked
+                function displaySections() {
+                    if (section_menu.style.display === 'none') {
+                        section_menu.style.display = "block";
+                    } 
+                    else {
+                        section_menu.style.display = "none";
+                    }
+                }
+                
+                window.addEventListener('click', function(e){
+                    // Clicked outside the topics_icon
+                    if (!document.getElementById('topics_icon').contains(e.target)){
+                        section_menu.style.display = "none";
+                    }
+                });
+            </script>
+        </div>
+        <div class="float_icon_row">
+            <img src="../top_icon.svg" class="float_icon" onclick="location.href='#';"/>
+        </div>
+    </div>
+    <div class="icon_desc">Bookmark</div>
+    <div class="icon_desc">Top</div>
+    <script>
+        function getOffset(el) {
+            const rect = el.getBoundingClientRect();
+            return {
+                left: rect.left + window.scrollX,
+                top: rect.top + window.scrollY
+            };
+        }
+        var icon_table = document.getElementsByClassName("float_icon_table")[0];
+        var icon_rows = icon_table.getElementsByClassName("float_icon_row");
+        var desc_rows = document.getElementsByClassName("icon_desc");
+        for(var i = 0; i < icon_rows.length; i++) {
+            var icon = icon_rows[i].getElementsByTagName("img")[0];
+            
+            icon.addEventListener(
+                'mouseleave',
+                function() {
+                    var desc = desc_rows[i];
+                    return function() {
+                        desc.style.visibility = "hidden";
+                    }
+            }());
+            icon.addEventListener(
+                'mouseover',
+                function() {
+                    var icon_func = icon_rows[i].getElementsByTagName("img")[0];
+                    var desc = desc_rows[i];
+                    var desc_top = getOffset(desc).top;
+                    var desc_left = getOffset(desc).left;
+                    return function() {
+                        var icon_top = getOffset(icon_func).top;
+                        var icon_left = getOffset(icon_func).left;
+                        var translate_x = icon_left - desc_left - desc.offsetWidth - 10;
+                        var translate_y = icon_top - desc_top + 0.5 * icon_func.offsetHeight - 0.5 * desc.offsetHeight;
+                        desc.style.transform = "translate(" + translate_x.toString() + "px," + translate_y.toString() + "px)";
+                        desc.style.visibility = "visible";
+                    }
+            }());
+            document.addEventListener(
+                'scroll', 
+                function() {
+                    var icon_func = icon_rows[i].getElementsByTagName("img")[0];
+                    var desc = desc_rows[i];
+                    var desc_top = getOffset(desc).top;
+                    var desc_left = getOffset(desc).left;
+                    return function() {
+                        var icon_top = getOffset(icon_func).top;
+                        var icon_left = getOffset(icon_func).left;
+                        var translate_x = icon_left - desc_left - desc.offsetWidth - 10;
+                        var translate_y = icon_top - desc_top + 0.5 * icon_func.offsetHeight - 0.5 * desc.offsetHeight;
+                        desc.style.transform = "translate(" + translate_x.toString() + "px," + translate_y.toString() + "px)";
+                }
+            } ());
+        }
+    </script>
+</body>
+
+</html>
