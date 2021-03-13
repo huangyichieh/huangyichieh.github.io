@@ -68,37 +68,7 @@
             <img src="../topics_icon.svg" class="float_icon" id="topics_icon" onclick="displaySections();"/>
             <ul style="display: none;" id="section_menu">
             </ul>
-            <script>
-                // Configure section menu
-                var section_menu = document.getElementById("section_menu");
-                var shorcut_collection = document.getElementsByClassName("shortcuts");
-                for (let shortcut of shorcut_collection) {
-                    var section_name = shortcut.childNodes[1].innerHTML;
-                    var li = document.createElement("li");
-                    var a = document.createElement("a");
-                    a.appendChild(document.createTextNode(section_name));
-                    a.href = shortcut.childNodes[1].href;
-                    li.appendChild(a);
-                    section_menu.appendChild(li);
-                }
-
-                // Show or hide section menu when clicked
-                function displaySections() {
-                    if (section_menu.style.display === 'none') {
-                        section_menu.style.display = "block";
-                    } 
-                    else {
-                        section_menu.style.display = "none";
-                    }
-                }
-                
-                window.addEventListener('click', function(e){
-                    // Clicked outside the topics_icon
-                    if (!document.getElementById('topics_icon').contains(e.target)){
-                        section_menu.style.display = "none";
-                    }
-                });
-            </script>
+            <script src="../section_menu.js"></script>
         </div>
         <div class="float_icon_row">
             <img src="../top_icon.svg" class="float_icon" onclick="location.href='#';"/>
@@ -106,61 +76,7 @@
     </div>
     <div class="icon_desc">Bookmark</div>
     <div class="icon_desc">Top</div>
-    <script>
-        function getOffset(el) {
-            const rect = el.getBoundingClientRect();
-            return {
-                left: rect.left + window.scrollX,
-                top: rect.top + window.scrollY
-            };
-        }
-        var icon_table = document.getElementsByClassName("float_icon_table")[0];
-        var icon_rows = icon_table.getElementsByClassName("float_icon_row");
-        var desc_rows = document.getElementsByClassName("icon_desc");
-        for(var i = 0; i < icon_rows.length; i++) {
-            var icon = icon_rows[i].getElementsByTagName("img")[0];
-            
-            icon.addEventListener(
-                'mouseleave',
-                function() {
-                    var desc = desc_rows[i];
-                    return function() {
-                        desc.style.visibility = "hidden";
-                    }
-            }());
-            icon.addEventListener(
-                'mouseover',
-                function() {
-                    var icon_func = icon_rows[i].getElementsByTagName("img")[0];
-                    var desc = desc_rows[i];
-                    var desc_top = getOffset(desc).top;
-                    var desc_left = getOffset(desc).left;
-                    return function() {
-                        var icon_top = getOffset(icon_func).top;
-                        var icon_left = getOffset(icon_func).left;
-                        var translate_x = icon_left - desc_left - desc.offsetWidth - 10;
-                        var translate_y = icon_top - desc_top + 0.5 * icon_func.offsetHeight - 0.5 * desc.offsetHeight;
-                        desc.style.transform = "translate(" + translate_x.toString() + "px," + translate_y.toString() + "px)";
-                        desc.style.visibility = "visible";
-                    }
-            }());
-            document.addEventListener(
-                'scroll', 
-                function() {
-                    var icon_func = icon_rows[i].getElementsByTagName("img")[0];
-                    var desc = desc_rows[i];
-                    var desc_top = getOffset(desc).top;
-                    var desc_left = getOffset(desc).left;
-                    return function() {
-                        var icon_top = getOffset(icon_func).top;
-                        var icon_left = getOffset(icon_func).left;
-                        var translate_x = icon_left - desc_left - desc.offsetWidth - 10;
-                        var translate_y = icon_top - desc_top + 0.5 * icon_func.offsetHeight - 0.5 * desc.offsetHeight;
-                        desc.style.transform = "translate(" + translate_x.toString() + "px," + translate_y.toString() + "px)";
-                }
-            } ());
-        }
-    </script>
+    <script src="../float_icon_desc.js"></script>
 </body>
 
 </html>
