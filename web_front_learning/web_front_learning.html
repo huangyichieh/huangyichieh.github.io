@@ -57,10 +57,10 @@
         <div class="section_content" id="html">
             <h1>HTML</h1>
 
-            <h2>Using &ltspan&gt vs &ltdiv&gt inside &ltp&gt</h2>
-            <p>Using &ltdiv&gt inside a paragraph &ltp&gt will force a new line. 
+            <h2>Using &lt;span&gt; vs &lt;div&gt; inside &lt;p&gt;</h2>
+            <p>Using &lt;div&gt; inside a paragraph &lt;p&gt; will force a new line. 
                 If you don't want to force a new line(for example adding style to 
-                a code block or directory path), use &ltspan&gt to avoid the new line.</p>
+                a code block or directory path), use &lt;span&gt; to avoid the new line.</p>
         </div>
 
         <!-- Section: CSS -->
@@ -112,11 +112,11 @@
             of the width of containing block.</b></li>
             <p>The solutions below will be modified based on this example:</p>
 <pre>
-<code class="html">&ltdiv style="height: 60px; background-color: lightgreen;"&gt
-    &ltdiv style="background-color: darksalmon;"&gt
+<code class="html">&lt;div style="height: 60px; background-color: lightgreen;"&gt;
+    &lt;div style="background-color: darksalmon;"&gt;
         This text should be at the center
-    &lt/div&gt
-&lt/div&gt
+    &lt;/div&gt;
+&lt;/div&gt;
 </code>
 </pre>
             <p>Preview:</p>
@@ -129,11 +129,11 @@
             <h3>Method 1: line-height equals to height of element</h3>
             <p>This method is suitable to center one-line text.</p>
 <pre>
-<code class="html">&ltdiv style="height: 60px; background-color: lightgreen;"&gt
-    &ltdiv style="line-height: 60px; background-color: darksalmon;"&gt
+<code class="html">&lt;div style="height: 60px; background-color: lightgreen;"&gt;
+    &lt;div style="line-height: 60px; background-color: darksalmon;"&gt;
         This text should be at the center
-    &lt/div&gt
-&lt/div&gt
+    &lt;/div&gt;
+&lt;/div&gt;
 </code>
 </pre>
             <p>Preview:</p>
@@ -147,16 +147,16 @@
             <p>A single flex-child can be made to center in a flex-parent. This 
             only work if the flex container has a fixe height.</p>
 <pre>
-<code class="html">&ltdiv style="
+<code class="html">&lt;div style="
     height: 60px; 
     display: flex; 
     flex-direction: column; 
     justify-content: center; 
-    background-color: lightgreen;"&gt
-    &ltdiv style="line-height: 60px; background-color: darksalmon;"&gt
+    background-color: lightgreen;"&gt;
+    &lt;div style="line-height: 60px; background-color: darksalmon;"&gt;
         This text should be at the center
-    &lt/div&gt
-&lt/div&gt
+    &lt;/div&gt;
+&lt;/div&gt;
 </code>
 </pre>
             <p>Preview:</p>
@@ -174,15 +174,15 @@
             <h3>Method 3: Transform half of height</h3>
             <p>Center by nudging it up half of it's height after bumping it down halfway.</p>
 <pre>
-<code class="html">&ltdiv style="position: relative; height: 60px; background-color: lightgreen;"&gt
-    &ltdiv style="
+<code class="html">&lt;div style="position: relative; height: 60px; background-color: lightgreen;"&gt;
+    &lt;div style="
         position: absolute;
         top: 50%;
         transform: translateY(-50%);
-        background-color: darksalmon;"&gt
+        background-color: darksalmon;"&gt;
         This text should be at the center
-    &lt/div&gt
-&lt/div&gt
+    &lt;/div&gt;
+&lt;/div&gt;
 </code>
 </pre>
             <p>Preview:</p>

@@ -25,12 +25,14 @@ for(var i = 0; i < icon_rows.length; i++) {
         function() {
             var icon_func = icon_rows[i].getElementsByTagName("img")[0];
             var desc = desc_rows[i];
-            var desc_top = getOffset(desc).top;
-            var desc_left = getOffset(desc).left;
             return function() {
+                desc.style.transform = ""; // move back to original position
                 var icon_top = getOffset(icon_func).top;
                 var icon_left = getOffset(icon_func).left;
-                var translate_x = icon_left - desc_left - desc.offsetWidth - 10;
+                var desc_top = getOffset(desc).top;
+                var desc_left = getOffset(desc).left;
+                var offset_x = -10;
+                var translate_x = icon_left - desc_left - desc.offsetWidth + offset_x;
                 var translate_y = icon_top - desc_top + 0.5 * icon_func.offsetHeight - 0.5 * desc.offsetHeight;
                 desc.style.transform = "translate(" + translate_x.toString() + "px," + translate_y.toString() + "px)";
                 desc.style.visibility = "visible";
@@ -41,12 +43,14 @@ for(var i = 0; i < icon_rows.length; i++) {
         function() {
             var icon_func = icon_rows[i].getElementsByTagName("img")[0];
             var desc = desc_rows[i];
-            var desc_top = getOffset(desc).top;
-            var desc_left = getOffset(desc).left;
             return function() {
+                desc.style.transform = ""; // move back to original position
                 var icon_top = getOffset(icon_func).top;
                 var icon_left = getOffset(icon_func).left;
-                var translate_x = icon_left - desc_left - desc.offsetWidth - 10;
+                var desc_top = getOffset(desc).top;
+                var desc_left = getOffset(desc).left;
+                var offset_x = -10;
+                var translate_x = icon_left - desc_left - desc.offsetWidth + offset_x;
                 var translate_y = icon_top - desc_top + 0.5 * icon_func.offsetHeight - 0.5 * desc.offsetHeight;
                 desc.style.transform = "translate(" + translate_x.toString() + "px," + translate_y.toString() + "px)";
         }
