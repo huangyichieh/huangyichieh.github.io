@@ -8,6 +8,23 @@
     <link href="https://fonts.googleapis.com/css?family=Lato:400,800" rel="stylesheet">
     <link rel=stylesheet type="text/css" href="../../topic_style.css">
     <title>Chapter 1: Introduction</title>
+
+    <!-- for code block -->
+    <link rel="stylesheet"
+        href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.6.0/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.6.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+
+    <!-- for math equations -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        MathJax = {
+          tex: {inlineMath: [['$', '$'], ['\\(', '\\)']], tags: 'all'}
+        };
+    </script>
+
+    <title>Web Front-end Learning</title>
 </head>
 
 <body>
@@ -38,6 +55,10 @@
             <div class="shortcuts">
                 <a href="#pbrt">pbrt: System Overview</a>
             </div>
+
+            <div class="shortcuts">
+                <a href="#reference">Reference</a>
+            </div>
         </div>
 
         <!-- Section: Literate Programming -->
@@ -48,21 +69,788 @@
             has the characteristic to mix prose with source code and mechanism to
             present code in entirely different order, to allow readers to focus more 
             on the core of the code.</p>
+            <p>Just like C++ programs, the literate programs in this book are based 
+            on C++ programming language with extra declarations below:</p>
+            <h2>&lt;Function Definitions&gt;</h2>
+            <p>This shows a summary  of a fragment of code, where you do not need 
+            to know what it done specifically. The detail can be added later on.</p>
+            <p>Example:</p>
+<pre>
+<code class="c++">void initGlobals() {
+    &lt;Initialize Global Variables&gt;
+}
+</code>
+</pre>
+            <h2>Define &lt;Function Definitions&gt;</h2>
+            <p>We can define the details of &lt;Function Definitions&gt; with following
+            declaration:</p>
+<pre>
+<code class="c++">&lt;Initialize Global Variables&gt; &equiv;
+    shoe_size = 13;
+</code>
+</pre>
+            <p>Note that the it can be partial declaration, so that we can focus
+            on the part we are interested in. Later on, we can append more declaration.</p>
+            <h2>Append definition of &lt;Function Definitions&gt;</h2>
+            <p>We can append more definition to previously defined functions.</p>
+<pre>
+<code class="c++">&lt;Initialize Global Variables&gt; &plus;&equiv;
+    dielectric = true;
+</code>
+</pre>
         </div>
 
         <!-- Section: Photorealistic Rendering and the Ray-Tracing Algorithm -->
         <div class="section_content" id="photorealistic">
             <h1>Photorealistic Rendering and the Ray-Tracing Algorithm</h1>
+            <p>The goal of photorealistic rendering is to create an image of a 3D 
+            scene that is "indistinguishable" from a photograph of the same scene.
+            The main idea of doing this is to replicate the real physical world 
+            phenomena into programs, formulating it into mathematical equations 
+            and programming logics.</p>
+            <p>Most photorealistic rendering system are based on ray-tracing algorithm. 
+            It is based on following the path of ray of light through scene as it 
+            interacts with 3D objects in the environment.</p>
+            <p>Although the implementations of ray tracer may varied, all such systems 
+            simulate at least following objects and phenomena:</p>
+            <li>Cameras</li>
+            <li>Ray-object intersections</li>
+            <li>Light distribution</li>
+            <li>Visibility</li>
+            <li>Surface scattering</li>
+            <li>Recursive ray tracing</li>
+            <li>Ray propagation</li>
+            
+            <h2>Cameras</h2>
+            <p>Just as the real-world camera, it is responsible to capture light 
+            and in render into 2D images in render system. The simplest abstraction 
+            of camera is the pinhole camera model:</p>
+            <img src="pinhole_camera_model.svg" width="70%" class="center">
+            <p>Connecting the pinhole to the edges of the film creates a double pyramid
+            that extends into the scene. The pyramid that extends into the scene is
+            called <i>viewing volume</i>, which refers to the region of space that 
+            can potentially be imaged onto the film.</p>
+            <p>An alternative presentation of pinhole camera is shown below:</p>
+            <img src="pinhole_camera_eye.svg" width="50%" class="center">
+            <p>It is not a practical camera model, but it helps simplify the structure 
+            of pinhole camera for convenience, as we are only interested about the 
+            interaction between camera and the scene.</p>
+            <p>Although camera models can be more complicated when we tried to simulate 
+            the real world camera, the detail part of the camera modeled can be encapsulated 
+            inside the camera module. The task of camera simulator is to determine 
+            the color of each point in the image, by generating rays along which light 
+            is known to contribute to that image location.</p>
+            <h2>Ray-object intersections</h2>
+            <p>Each time the camera generates a ray, the first task is to detect any 
+            objects intersect with the ray, and where do the intersections occurred.
+            The intersections represent a possible visible point along the ray.</p>
+            <p>To find intersection of ray, we define the parametric form of the 
+            ray as:</p>
+            <div class="formula">$$ r(t) = o + td $$</div>
+            <p>where $ o $ stands for the ray's origin, $ d $ as the ray's direction 
+            vector, and $ t $ as a parameter for how far the ray had traveled in 
+            range [0, &infin;).</p>
+            <p>To find intersection of a ray and surface we simply substitute ray 
+            equation into surface function. For example a sphere surface with equation:</p>
+            <div class="formula">$$ x^2 + y^2 + z^2 -r^2 = 0 $$</div>
+            <p>Substituting ray equation we get:</p>
+            <div class="formula">$$ (o + td)_x^2 + (o + td)_y^2 + (o + td)_z^2 - r^2 = 0 $$</div>
+            <p>By solving this quadratic equation in $ t $ we can find the intersection 
+            point. If there are real roots, and we choose smallest $ t $ to get the 
+            first intersection point.</p>
+            <p>Now we get the intersection points, we need to know additional geometric 
+            information about the intersection point. On other hand, it is not practical 
+            to use brute-force intersection approach. The following topics, will be 
+            discussed in later section.</p>
+            <h2>Light distribution</h2>
+            <p>The ray-object intersection allows us to know a point to be shaded, 
+            but we need to find the th amount of eye leaving from this point to our 
+            camera. This include the geometric and radiometric distribution of lights 
+            sources in the scene. It is easy for simple light source like point lights, 
+            but it does not exist in the real world.</p>
+            <p>From figure below:</p>
+            <img src="light_spheres_equal_power.svg" width="30%" class="center">
+            <p>We see that if same amount of light energy is distributed on both 
+            sphere with $ r_1 $ and sphere with $ r_2 $, the larger surface area 
+            will have lesser energy distributed. Specifically, amount of energy 
+            distributed on sphere with radius $ r $ will be proportional to $ 1 / r^2$.</p>
+            <p>Also we can see from below:</p>
+            <img src="angle_and_dA.svg" width="40%" class="center">
+            <p>The amount of energy deposited on $ dA $ is proportional to 
+            $ \cos{\theta} $.</p>
+            <p>Consequently, the total light energy $ dE $ deposited on $ dA $ is</p>
+            <div class="formula">$$ dE = \frac{\Phi \cos{\theta}}{4\pi r^2} $$</div>
+            <h2>Visibility</h2>
+            <img src="light_visibility.svg" width="40%" class="center">
+            <p>A light source only deposits energy on a surface if the source is 
+            not obscured as seen from the receiving point. The light source on the 
+            left illuminates the point , but the light source on the right does not.</p>
+            <p>To determine whether the light is visible from the point being shaded, 
+            we simply construct a new ray whose origin is at the surface point and 
+            pointing towards the light source. These special rays are called <i>shadow rays</i>. 
+            If the intersection point of shadow ray is greater than the distance to 
+            light or no intersection points found, there is no blocking object between 
+            light and the surface, hence the light's contribution is included.</p>
+            <h2>Surface scattering</h2>
+            <p>Now we need to determine how incident lighting is scattered at the 
+            surface. Especially the amount of light energy scattered back along the 
+            ray.</p>
+            <p>Each object in the scene provides a <i>material</i>, describing its
+            appearance at each point on the surface. The description is given by Bidirectional
+            Reflectance Distribution Function(BRDF), which tells us the amount of 
+            energy reflected from an incoming ray $ \omega_i $ to outgoing ray 
+            $ \omega_o $.</p>
+            <img src="surface_scattering.svg" width="40%" class="center">
+            <p>We will write the BRDF at point $ p $ as $ f_r(p, \omega_o, \omega_i) $.
+            The code representation of amount of light scattered back to eye:</p>
+<pre>
+<code>for each light:
+    if light is not blocked:
+        incident_light = light.L( point )
+        amount_reflected = surface.BRDF( hit_point, light_vector, eye_vector)
+        L += amount_reflected * incident_light
+</code>
+</pre>
+            <p>$ L $ represent the light energy, it has different unit compare to $ dE $.</p>
+            <h2>Recursive ray tracing</h2>
+            <p>In general, the amount of light reaches the eye from a point on an 
+            object is the sum of emitted light and reflected light. This idea is 
+            formalized by the light transport equation(rendering equation):</p>
+            <div class="formula">$$ L_o(p, \omega_o) = L_e(p, \omega_o) + 
+            \int_{S^2}f(p, \omega_o, \omega_i) L_i(p, \omega_i) |\cos{\theta_i}| d\omega_i 
+            \label{eq:light_transport}$$</div>
+            <p>Where:</p>
+            <ul style="list-style: none;">
+                <li>$ L_o(p, \omega_o) $: outgoing radiance from point $ p $
+                in direction $ \omega_o $</li>
+                <li>$ L_e(p, \omega_o) $: the emitted radiance from point $ p $ on 
+                direction $ \omega_o $</li>
+                <li>$ S^2 $: all direction on the sphere around point $ p $</li>
+                <li>$ f(p, \omega_o, \omega_i) $: the BRDF function on point $ p $</li>
+                <li>$ L_i(p, \omega_i) $: the incident ray on $ p $ with direction $ \omega_i $</li>
+            </ul>
+            <p>Solving this integral analytically is not practical, so we either 
+            simplify the assumptions or use numerical integration technique.</p>
+            <p>For example, Whitted's algorithm simplify this equation by ignoring 
+            most directions and only evaluating $ L_i(p, \omega_i) $ for directions 
+            to light sources and perfect reflection and refraction.</p>
+            <p>Not surprisingly, the recursive nature of ray tracing will lead to two 
+            problems. When to terminate the recursion? How to choose the direction 
+            of the ray so that the rendering algorithm can converge at reasonable 
+            time?(This will be discussed later)</p>
+            <img src="ray_tree.svg" width="40%" class="center">
+            <p>Recursive ray tracing associates an entire tree of rays with each image location.</p>
+            <h2>Ray propagation</h2>
+            <p>The prior discussion are assumed that light transport through a vacuum,
+            where the energy of light is distributed equally without decreasing 
+            along the way. However, it is possible that the light will attenuate 
+            or even scatter it into different directions. The participating medium 
+            is introduced to explain such phenomena where we can capture this effect
+            by computing transmittance $ T $ between ray origin and intersection 
+            point, how much light scattered at the intersection point makes its back 
+            to the ray origin.</p>
+            <img src="spotfog.png" width="50%" class="center">
+            <p>Notice that the shape of the spotlight’s lighting distribution and 
+            the sphere’s shadow are clearly visible due to the additional scattering 
+            in the participating medium.</p>
         </div>
 
         <!-- Section: Photorealistic Rendering and the Ray-Tracing Algorithm -->
         <div class="section_content" id="pbrt">
             <h1>pbrt: System Overview</h1>
+            <p>pbrt is structured using standard object-oriented techniques: abstract 
+            base classes are defined for important entities (e.g., a Shape abstract 
+            base class defines the interface that all geometric shapes must implement, 
+            the Light abstract base class acts similarly for lights, etc.). The majority 
+            of the system is implemented purely in terms of the interfaces provided 
+            by these abstract base classes; for example, the code that checks for 
+            occluding objects between a light source and a point being shaded calls 
+            the Shape intersection methods and doesn’t need to consider the particular 
+            types of shapes that are present in the scene. This approach makes it 
+            easy to extend the system, as adding a new shape only requires implementing 
+            a class that implements the Shape interface and linking it into the system.</p>
+            <p>pbrt supports 10 different types of plug-ins:</p>
+            <table width="70%">
+                <tr>
+                    <th>Base class</th><th>Directory</th><th>Section</th>
+                </tr>
+                <tr>
+                    <td>Shape</td><td>shapes/</td><td>3.1</td>
+                </tr>
+                <tr>
+                    <td>Aggregate</td><td>accelerators/</td><td>4.2</td>
+                </tr>
+                <tr>
+                    <td>Camera</td><td>cameras/</td><td>6.1</td>
+                </tr>
+                <tr>
+                    <td>Sampler</td><td>samplers/</td><td>7.2</td>
+                </tr>
+                <tr>
+                    <td>Filter</td><td>filters/</td><td>7.8</td>
+                </tr>
+                <tr>
+                    <td>Material</td><td>materials/</td><td>9.2</td>
+                </tr>
+                <tr>
+                    <td>Texture</td><td>textures/</td><td>10.3</td>
+                </tr>
+                <tr>
+                    <td>Medium</td><td>media/</td><td>11.3</td>
+                </tr>
+                <tr>
+                    <td>Light</td><td>lights/</td><td>12.2</td>
+                </tr>
+                <tr>
+                    <td>Integrator</td><td>integrators/</td><td>1.3.3</td>
+                </tr>
+            </table>
+
+            <h2>Phases of execution</h2>
+            <p>pbrt can be conceptually divided into two phases of execution:</p>
+            <img src="phase_of_execution.svg" width="40%" class="center">
+            <h3>Parse scene description files</h3>
+            <p>The scene description files is a text file that specifies everything 
+            in the scene(geometries, material properties, light, camera, and parameters 
+            for algorithms). The end result of this phase is an instance of 
+            <span class="code_line">Scene</span> class.</p>
+            <h3>Main rendering loop</h3>
+            <p>The main rendering loop is implemented in <span class="code_line">Scene::Render()</span>
+            method which will be discussed in later section. In summary, it determines
+            the light arriving at a virtual film plane for a large number of rays 
+            in order to model the process of image formation.</p>
+            <h2>Scene representation</h2>
+            <p>pbrt's main() function(found in the file <span class="code_line">main/pbrt.cpp</span>):</p>
+<pre>
+<code class="c++">&lt;main program&gt; &equiv;
+    int main(int argc, char *argv[]) {
+        Options options;
+        std::vector<std::string> filenames;
+        &lt;Process command-line arguments&gt;
+        pbrtInit(options);
+        &lt;Process scene description&gt;
+        pbrtCleanup();
+        return 0;
+    }
+</code>
+</pre>
+            <p>After the scene file is parsed, a <span class="code_line">Scene</span> 
+            object and an <span class="code_line">Integrator</span> object are created.</p>
+<pre>
+<code class="c++">&lt;Process scene description&gt; &equiv;
+    if (filenames.size() == 0) {
+        &lt;Parse scene from standard input&gt;
+    } else {
+        &lt;Parse scene from input files&gt;
+    }
+</code>
+</pre>
+            <p>If pbrt is run with no input filenames provided, then the scene description 
+            is read from standard input. Otherwise it loops through the provided 
+            filenames, processing each file in turn.</p>
+            <p><span class="code_line">Scene</span> class is declared in <span class="code_line">core/scene.h</span> 
+            and defined in <span class="code_line">core/scene.cpp</span>:</p>
+<pre>
+<code class="c++">Class Scene {
+public:
+    &lt;Scene Public Methods&gt;
+    &lt;Scene Public Data&gt;
+private:
+    &lt;Scene Private Data&gt;
+};
+</code>
+</pre>
+<pre>
+<code class="c++">&lt;Scene Public Methods&gt; &equiv;
+Scene(std::shared_ptr<Primitive> aggregate, const std::vector<std::shared_ptr<Light>> &lights)
+    : lights(lights), aggregate(aggregate) {
+    &lt;Scene Constructor Implementation&gt;
+}
+</code>
+</pre>
+            <p>Each light is represented by <span class="code_line">Light</span>
+            object, which specifies shape and distribution of light.</p>
+<pre>
+<code class="c++">&lt;Scene Public Data&gt; &plus;&equiv;
+vector&lt;Light *&gt; *lights;
+</code>
+</pre>
+            <p>Each geometric object in the scene is represented by a <span class="code_line">Primitive</span>
+            , which contain two objects: a <span class="code_line">Shape</span> defining 
+            its geometry, and a <span class="code_line">Material</span> describing 
+            its appearance.</p>
+<pre>
+<code class="c++">&lt;Scene Private Data&gt; &equiv;
+    Primitive *aggregate;
+</code>
+</pre>
+            <p>The constructor caches the bounding box of the scene geometry in the 
+            <span class="code_line">worldBound</span> member variable:</p>
+<pre>
+<code class="c++">&lt;Scene Constructor Implementation&gt; &equiv;
+worldBound = aggregate->WorldBound();
+
+&lt;Scene Private Data&gt; &plus;&equiv;
+Bounds3f worldBound;
+
+&lt;Scene Public Methods&gt; &plus;&equiv;
+const Bounds3f &WorldBound() const { return worldBound; }
+</code>
+</pre>
+            <p>Some <span class="code_line">Light</span> implementations find it 
+            useful to do some additional initialization after the scene has been 
+            defined but before rendering begins, but this requires their
+            <span class="code_line">Preprocess()</span> methods being called in 
+            <span class="code_line">Scene</span> constructor:</p>
+<pre>
+<code class="c++">&lt;Scene Constructor Implementation&gt; &plus;&equiv;
+for (const auto &light : lights)
+    light->Preprocess(*this);
+</code>
+</pre>
+            <p>The <span class="code_line">Scene</span> provides two method to ray-primitive 
+            intersection: <span class="code_line">Intersect()</span> method fills 
+            in the <span class="code_line">SurfaceInteraction</span> object about 
+            closest intersection point; while <span class="code_line">IntersectP</span>
+            only check if there is any intersections along the ray:</p>
+<pre>
+<code class="c++">&lt;Scene Method Definitions&gt; &equiv;
+bool Scene::Intersect(const Ray &ray, SurfaceInteraction *isect) const {
+    return aggregate->Intersect(ray, isect);
+}
+bool Scene::IntersectP(const Ray &ray) const {
+    return aggregate->IntersectP(ray);
+}
+</code>
+</pre>
+            <h2>Integrator Interface and SamplerIntegrator</h2>
+            <p><span class="code_line">Integrator</span> is an abstract base class 
+            that defines the <span class="code_line">Render()</span> method that 
+            must be provided by all integrators. The basic integrator interfaces 
+            are defined in <span class="code_line">core/integrator.h</span>, and 
+            some utility functions used by integrators are in 
+            <span class="code_line">core/integrator.cpp</span>. The implementations 
+            of the various integrators are in the <span class="code_line">integrators</span> 
+            directory. </p>
+<pre>
+<code class="c++">&lt;Integrator Declarations&gt; &equiv;
+class Integrator {
+public:
+    &lt;Integrator Interface&gt;
+};
+
+&lt;Integrator Interface&gt; &equiv;
+virtual void Render(const Scene &scene) = 0;
+</code>
+</pre>
+            <p>This chapter will focus on <span class="code_line">SamplerIntegrator</span>,
+            which is an <span class="code_line">Integrator</span> subclass, and the
+            <span class="code_line">WhittedIntegrator</span>, which implements the
+            <span class="code_line">SamplerIntegrator</span> interface.</p>
+<pre>
+<code class="c++">&lt;SamplerIntegrator Declarations&gt; &equiv;
+class SamplerIntegrator : public Integrator {
+public:
+    &lt;SamplerIntegrator Public Methods&gt;
+protected:
+    &lt;SamplerIntegrator Protected Data&gt;
+private:
+    &lt;SamplerIntegrator Private Data&gt;
+};
+</code>
+</pre>
+            <p><span class="code_line">SamplerIntegrator</span> stores a pointer to 
+            a <span class="code_line">Sampler</span>. The role of the <span class="code_line">Sampler</span>
+            is to choose the points on the image plane from which rays are traced,
+            and to supply the sample positions used by integrators for estimating 
+            the value of the light transport integral \eqref{eq:light_transport}:</p>
+<pre>
+<code class="c++">&lt;SamplerIntegrator Private Data&gt; &equiv;
+std::shared_ptr&lt;Sampler&gt; sampler;
+</code>
+</pre>
+            <p>The <span class="code_line">Camera</span> object stores the camera's 
+            parameters, it also contains a <span class="code_line">Film</span> member 
+            variable to handle image storage.</p>
+<pre>
+<code class="c++">&lt;SamplerIntegrator Protected Data&gt; &equiv;
+std::shared_ptr<const Camera> camera;
+</code>
+</pre>
+            <p><span class="code_line">SamplerIntegrator</span> stores pointers 
+            to both <span class="code_line">Camera</span> and <span class="code_line">Sampler</span>
+            object:</p>
+<pre>
+<code class="c++">&lt;SamplerIntegrator Public Methods&gt; &equiv;
+SamplerIntegrator(std::shared_ptr&lt;const Camera&gt; camera,
+    std::shared_ptr&lt;Sampler&gt; sampler)
+: camera(camera), sampler(sampler) { }
+</code>
+</pre>
+            <p><span class="code_line">SamplerIntegrator</span> may optionally
+            implement the <span class="code_line">Preprocess()</span> method:</p>
+<pre>
+<code class="c++">&lt;SamplerIntegrator Public Methods&gt; &plus;&equiv;
+virtual void Preprocess(const Scene &scene, Sampler &sampler) { }
+</code>
+</pre>
+            <h2>Main rendering loop</h2>
+            <p><span class="code_line">Integrator::Render()</span>:</p>
+            <img src="class_relationship.svg" width="90%" class="center">
+            <p>For each pixel on the image plane, the <span class="code_line">Camera</span>
+            and the <span class="code_line">Sampler</span> generate ray into the 
+            scene, then use the <span class="code_line">Li()</span> method to determine 
+            the amount of light arriving at the image plane along that ray. This 
+            value is then passed to <span class="code_line">Film</span> to record 
+            the light's contribution.</p>
+<pre>
+<code class="c++">&lt;SamplerIntegrator Method Definitions&gt; &equiv;
+void SamplerIntegrator::Render(const Scene &scene) {
+    Preprocess(scene, *sampler);
+    &lt;Render image tiles in parallel&gt;
+    &lt;Save final image after rendering&gt;
+}
+</code>
+</pre>
+            <p>The <span class="code_line">ParallelFor2D()</span> function implements 
+            a parallel for loop to loops over the image tiles, where multiple iterations 
+            may run in parallel:</p>
+<pre>
+<code class="c++">&lt;Render image tiles in parallel&gt; &equiv;
+&lt;Compute number of tiles, nTiles, to use for parallel rendering&gt;
+ParallelFor2D(
+    [&](Point2i tile) {
+        &lt;Render section of image corresponding to tile&gt;
+    }, nTiles);
+</code>
+</pre>
+            <p>Now to decide the size of the image tiles, wee need to consider two
+            problems: load-balancing and per-tile overhead. If we choose a large
+            image-tile size, it is most likely that the processors handling simpler 
+            image tile will end earlier and will be idling if there is no more task.
+            On other hand, if we choose image tile size that is too small, the 
+            accumulated overhead for determining which iteration loop a processing 
+            core should run next will be larger, thus making it inefficient.</p>
+            <p>For simplicity, pbrt always uses 16 &times; 16 tiles:</p>
+<pre>
+<code class="c++">&lt;Compute number of tiles, nTiles, to use for parallel rendering&gt; &equiv;
+Bounds2i sampleBounds = camera->film->GetSampleBounds();
+Vector2i sampleExtent = sampleBounds.Diagonal();
+const int tileSize = 16;
+Point2i nTiles((sampleExtent.x + tileSize - 1) / tileSize,
+                (sampleExtent.y + tileSize - 1) / tileSize);
+</code>
+</pre>
+<pre>
+<code class="c++">&lt;Render section of image corresponding to tile&gt; &equiv;
+&lt;Allocate MemoryArena for tile&gt;
+&lt;Get sampler instance for tile&gt;
+&lt;Compute sample bounds for tile&gt;
+&lt;Get FilmTile for tile&gt;
+&lt;Loop over pixels in tile to render them&gt;
+&lt;Merge image tile into Film&gt;
+</code>
+</pre>
+            <p><span class="code_line">MemoryArena</span> instances manage pools 
+            of memory to enable high performance allocation. Instances of this class 
+            can only be used by a single thread:</p>
+<pre>
+<code class="c++">&lt;Allocate MemoryArena for tile&gt; &equiv;
+MemoryArena arena;
+</code>
+</pre>
+            <p><span class="code_line">Sampler</span> used in different thread mostly
+            require it to maintain different state. For example, a pseudo-random 
+            number generator(so that the same pseudo-random number is not generated 
+            in every tile):</p>
+<pre>
+<code class="c++">&lt;Get sampler instance for tile&gt; &equiv;
+int seed = tile.y * nTiles.x + tile.x;
+std::unique_ptr<Sampler> tileSampler = sampler->Clone(seed);
+</code>
+</pre>
+            <p>Next, the extent of pixels to be sampled is computed:</p>
+<pre>
+<code class="c++">&lt;Compute sample bounds for tile&gt; &equiv;
+int x0 = sampleBounds.pMin.x + tile.x * tileSize;
+int x1 = std::min(x0 + tileSize, sampleBounds.pMax.x);
+int y0 = sampleBounds.pMin.y + tile.y * tileSize;
+int y1 = std::min(y0 + tileSize, sampleBounds.pMax.y);
+Bounds2i tileBounds(Point2i(x0, y0), Point2i(x1, y1));
+</code>
+</pre>
+            <p>Finally, a <span class="code_line">FilmTile</span> is acquired from 
+            the <span class="code_line">Film</span>. This store pixel values for 
+            the current tile:</p>
+<pre>
+<code class="c++">&lt;Get FilmTile for tile&gt; &equiv;
+std::unique_ptr&lt;FilmTile&gt; filmTile = camera->film->GetFilmTile(tileBounds);
+</code>
+</pre>
+            <p>Rendering can now proceed:</p>
+<pre>
+<code class="c++">&lt;Loop over pixels in tile to render them&gt; &equiv;
+for (Point2i pixel : tileBounds) {
+    tileSampler->StartPixel(pixel);
+    do {
+        &lt;Initialize CameraSample for current sample&gt;
+        &lt;Generate camera ray for current sample&gt;
+        &lt;Evaluate radiance along camera ray&gt;
+        &lt;Add camera ray’s contribution to image&gt;
+        &lt;Free MemoryArena memory from computing image sample value&gt;
+    } while (tileSampler->StartNextSample());
+}
+</code>
+</pre>
+            <p>The <span class="code_line">CameraSample</span> structure records 
+            the position on the film for which the camera should generate the corresponding 
+            ray. It also stores time and lens position sample values, which are used 
+            when rendering scenes with moving objects and for camera models that 
+            simulate non-pinhole apertures, respectively.</p>
+<pre>
+<code class="c++">&lt;Initialize CameraSample for current sample&gt; &equiv;
+CameraSample cameraSample = tileSampler->GetCameraSample(pixel);
+</code>
+</pre>
+            <p>The <span class="code_line">Camera</span> interface provides two 
+            methods to generate rays: <span class="code_line">Camera::GenerateRay()</span>
+            which returns the ray for a given image sample position, and 
+            <span class="code_line">Camera::GenerateRayDifferential()</span> which 
+            returns a <i>ray differential</i>, incorporating information about neighboring 
+            ray in both <i>x</i> and <i>y</i> directions.</p>
+<pre>
+<code class="c++">&lt;Generate camera ray for current sample&gt; &equiv;
+RayDifferential ray;
+Float rayWeight = camera->GenerateRayDifferential(cameraSample, &ray);
+ray.ScaleDifferentials(1 / std::sqrt(tileSampler->samplesPerPixel));
+</code>
+</pre>
+            <p><span class="code_line">ScaleDifferentials</span> method scales the 
+            differential rays to actual spacing for the case where multiple samples 
+            are taken per pixel. The camera also return a weight associated with 
+            the ray to simulate the <i>vignetting</i> effect.</p>
+            <p>Next, the <span class="code_line">Li()</span> method determine the 
+            radiance arriving at the image plane along the ray:</p>
+<pre>
+<code class="c++">&lt;Evaluate radiance along camera ray&gt; &equiv;
+Spectrum L(0.f);
+if (rayWeight > 0)
+    L = Li(ray, scene, *tileSampler, arena);
+&lt;Issue warning if unexpected radiance value is returned&gt;
+</code>
+</pre>
+            <p><span class="code_line">Li()</span> is a pure virtual method that 
+            returns the incident radiance at the origin of a given ray; each subclass 
+            of <span class="code_line">SamplerIntegrator</span> must provide an 
+            implementation of this method.</p>
+            <p>The method returns a <span class="code_line">Spectrum</span> that
+            represents the incident radiance at the origin of the ray:</p>
+<pre>
+<code class="c++">&lt;SamplerIntegrator Public Methods&gt; &plus;&equiv;
+virtual Spectrum Li(const RayDifferential &ray, const Scene &scene,
+    Sampler &sampler, MemoryArena &arena, int depth = 0) const = 0;
+</code>
+</pre>
+            <p><span class="code_line">FilmTile::AddSample()</span> method updates 
+            the pixels in the tile's image given the results from a sample:</p>
+<pre>
+<code class="c++">&lt;Add camera ray’s contribution to image&gt; &equiv;
+filmTile->AddSample(cameraSample.pFilm, L, rayWeight);
+</code>
+</pre>
+            <p>After processing a sample:</p>
+<pre>
+<code class="c++">&lt;Free MemoryArena memory from computing image sample value&gt; &equiv;
+arena.Reset();
+
+&lt;Merge image tile into Film&gt; &equiv;
+camera->film->MergeFilmTile(std::move(filmTile));
+
+&lt;Save final image after rendering&gt; &equiv;
+camera->film->WriteImage();
+</code>
+</pre>
+            <h2>An integrator for Whitted ray tracing</h2>
+            <p>Whitted's ray-tracing algorithm accurately computes reflected and 
+            transmitted light from specular surface, but it does not account for 
+            indirect lighting. The <span class="code_line">WhittedIntegrator</span>
+            class can be found in the <span class="code_line">integrators/whitted.h</span>
+            and <span class="code_line">integrators/whitted.cpp</span> files in the 
+            pbrt distribution.</p>
+<pre>
+<code class="c++">&lt;WhittedIntegrator Declarations&gt; &equiv;
+class WhittedIntegrator : public SamplerIntegrator {
+public:
+    &lt;WhittedIntegrator Public Methods&gt;
+private:
+    &lt;WhittedIntegrator Private Data&gt;
+};
+
+&lt;WhittedIntegrator Public Methods&gt; &equiv;
+WhittedIntegrator(int maxDepth, std::shared_ptr<const Camera> camera,
+    std::shared_ptr<Sampler> sampler)
+: SamplerIntegrator(camera, sampler), maxDepth(maxDepth) { }
+</code>
+</pre>
+            <p>The Whitted integrator works by recursively evaluating radiance along 
+            reflected and refracted ray directions. It stops the recursion at a 
+            predetermined maximum depth, which is initialized in the constructor:</p>
+<pre>
+<code class="c++">&lt;WhittedIntegrator Private Data&gt; &equiv;
+const int maxDepth;
+</code>
+</pre>
+            <p><span class="code_line">WhittedIntegrator::Li()</span> method:</p>
+            <img src="surface_integration_class_relationship.svg" width="90%" class="center">
+<pre>
+<code class="c++">&lt;WhittedIntegrator Method Definitions&gt; &equiv;
+Spectrum WhittedIntegrator::Li(const RayDifferential &ray,
+        const Scene &scene, Sampler &sampler, MemoryArena &arena,
+        int depth) const {
+    Spectrum L(0.);
+    &lt;Find closest ray intersection or return background radiance&gt;
+    &lt;Compute emitted and reflected light at ray intersection point&gt;
+    return L;
+}
+</code>
+</pre>
+            <p>The first step is to find the first intersection of the ray with the 
+            shapes in the scene.</p>
+<pre>
+<code class="c++">&lt;Find closest ray intersection or return background radiance&gt; &equiv;
+SurfaceInteraction isect;
+if (!scene.Intersect(ray, &isect)) {
+    for (const auto &light : scene.lights)
+        L += light->Le(ray);
+    return L;
+}
+</code>
+</pre>
+            <p>For this part we ignore the effect of participating media, so that 
+            the radiance leaving the intersection point is the same as the radiance 
+            arriving at the ray's origin.</p>
+<pre>
+<code class="c++">&lt;Compute emitted and reflected light at ray intersection point&gt; &equiv;
+&lt;Initialize common variables for Whitted integrator&gt;
+&lt;Compute scattering functions for surface interaction&gt;
+&lt;Compute emitted light if ray hit an area light source&gt;
+&lt;Add contribution of each light source&gt;
+if (depth + 1 &lt; maxDepth) {
+    &lt;Trace rays for specular reflection and refraction>&gt;
+}
+</code>
+</pre>
+            <img src="whitted_integrator_quantities.svg" width="50%" class="center">
+            <p><span class="code_line">n</span> stands for surface normal at the 
+            intersection point. $ \omega_o $ stands for normalized direction from 
+            the hit point back to the ray origin, which is written as 
+            <span class="code_line">wo</span> in the code.</p>
+<pre>
+<code>&lt;Initialize common variables for Whitted integrator&gt; &equiv;
+Normal3f n = isect.shading.n;
+Vector3f wo = isect.wo;
+</code>
+</pre>
+            <p><span class="code_line">ComputeScatteringFunctions()</span> evaluates 
+            texture function to determine surface properties and then initialize 
+            a representation of BSDF at the point.</p>
+<pre>
+<code>&lt;Compute scattering functions for surface interaction&gt; &equiv;
+isect.ComputeScatteringFunctions(ray, arena);
+</code>
+</pre>
+            <p>In case the ray hit geometry that is emissive, it calls 
+            <span class="code_line">SurfaceInteraction::Le()</span> method:</p>
+<pre>
+<code>&lt;Compute emitted light if ray hit an area light source&gt; &equiv;
+L += isect.Le(wo);
+</code>
+</pre>
+<pre>
+<code>&lt;Add contribution of each light source&gt; &equiv;
+for (const auto &light : scene.lights) {
+    Vector3f wi;
+    Float pdf;
+    VisibilityTester visibility;
+    Spectrum Li = light->Sample_Li(isect, sampler.Get2D(), &wi,
+                                    &pdf, &visibility);
+    if (Li.IsBlack() || pdf == 0) continue;
+    Spectrum f = isect.bsdf->f(wo, wi);
+    if (!f.IsBlack() && visibility.Unoccluded(scene))
+        L += f * Li * AbsDot(wi, n) / pdf;
+}
+</code>
+</pre>
+            <p><span class="code_line">Light::Sample_Li()</span> method compute the 
+            radiance of the light falling on the surface at the point being shaded,
+            and also returns direction from the point being shaded to the light source, 
+            represented as <span class="code_line">wi</span>.</p>
+            <p>The method also return a <span class="code_line">VisibilityTester</span>
+            object to determine if any primitive block the surface point from the 
+            light source. This is done by checking the shadow ray between the point 
+            being shaded and the light source is not blocked by other primitives.</p>
+            <p><span class="code_line">Sample_Li()</span> method also returns the 
+            probability density for the light for Monte Carlo integration with complex 
+            area light sources. For point lights, <span class="code_line">pdf = 1</span>.</p>
+            <p>light contribution is calculated according to equation\eqref{eq:light_transport},
+            with only <i>direct lighting</i> considered in this case.</p>
+            <p>This integrator also account for reflection and refraction according 
+            to Snell's law:</p>
+<pre>
+<code>&lt;Trace rays for specular reflection and refraction&gt; &equiv;
+L += SpecularReflect(ray, isect, scene, sampler, arena, depth);
+L += SpecularTransmit(ray, isect, scene, sampler, arena, depth);
+
+&lt;SamplerIntegrator Method Definitions&gt; &plus;&equiv;
+Spectrum SamplerIntegrator::SpecularReflect(const RayDifferential &ray,
+        const SurfaceInteraction &isect, const Scene &scene,
+        Sampler &sampler, MemoryArena &arena, int depth) const {
+    &lt;Compute specular reflection direction wi and BSDF value&gt;
+    &lt;Return contribution of specular reflection&gt;
+}
+</code>
+</pre>
+            <p>In the <span class="code_line">SpecularReflect()</span> and
+            <span class="code_line">SpecularTransmit()</span> methods, the 
+            <span class="code_line">BSDF::Sample_f()</span> method returns an incident
+            ray direction for a given outgoing direction and mode of light scattering.
+            Here we will be only considering perfect specular reflection and refraction.</p>
+<pre>
+<code>&lt;Compute specular reflection direction wi and BSDF value&gt; &equiv;
+Vector3f wo = isect.wo, wi;
+Float pdf;
+BxDFType type = BxDFType(BSDF_REFLECTION | BSDF_SPECULAR);
+Spectrum f = isect.bsdf->Sample_f(wo, &wi, sampler.Get2D(), &pdf, type);    
+</code>
+</pre>
+            <p>The <span class="code_line">BSDF::Sample_f()</span> in these functions 
+            initialize <span class="code_line">wi</span> with the chosen direction 
+            and return the BSDF's value for the direction $ (\omega_o, \omega_i) $.</p>
+<pre>
+<code>&lt;Return contribution of specular reflection&gt; &equiv;
+const Normal3f &ns = isect.shading.n;
+if (pdf &gt; 0 && !f.IsBlack() && AbsDot(wi, ns) != 0) {
+    &lt;Compute ray differential rd for specular reflection&gt;
+    return f * Li(rd, scene, sampler, arena, depth + 1) * AbsDot(wi, ns) /
+            pdf;
+}
+else
+    return Spectrum(0.f);
+</code>
+</pre>
+            <p>The ray differentials are to antialias textures that are seen in 
+            reflections or refractions, it will be discussed in chapter 10.</p>
+            <p>The <span class="code_line">SpecularTransmit()</span> method is similar 
+            with <span class="code_line">SpecularReflect()</span>, it simply replace
+            <span class="code_line">BSDF_REFLECTION</span> flag to 
+            <span class="code_line">BSDF_TRANSMISSION</span>.</p>
         </div>
 
         <!-- Section: Reference -->
         <div class="section_content" id="reference">
             <h1>Reference</h1>
+            <li><a href="https://github.com/mmp/pbrt-v3">
+                https://github.com/mmp/pbrt-v3</a></li>
         </div>
     </div>
     

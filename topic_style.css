@@ -270,3 +270,52 @@ header {
     padding: 10px;
     text-align: center;
 }
+
+.section_content table{
+    margin-left: auto;
+    margin-right: auto;
+    border-spacing: 0;
+    font-size: 18px;
+}
+
+.section_content table tr{
+    padding: 0.5em;
+}
+
+.section_content table th{
+    padding: 0.5em;
+    border-bottom-style: solid;
+    border-bottom-width: 2px;
+    border-bottom-color: rgb(185, 185, 255);
+    border-right-style: solid;
+    border-right-width: 2px;
+    border-right-color: rgb(185, 185, 255);
+    background-color: rgb(214, 214, 250);
+}
+
+.section_content table th:last-child{
+    border-right-width: 0;
+}
+
+.section_content table td{
+    padding: 0.3em;
+    border-bottom-style: solid;
+    border-bottom-width: 2px;
+    border-bottom-color: rgb(185, 185, 255);
+    border-right-style: solid;
+    border-right-width: 2px;
+    border-right-color: rgb(185, 185, 255);
+    background-color: lavender;
+}
+
+.section_content table td:last-child{
+    border-right-width: 0;
+}
+
+.section_content table tr:last-child td{
+    border-bottom-width: 0;
+}
+
+.formula{
+    font-size: 24px;
+}
