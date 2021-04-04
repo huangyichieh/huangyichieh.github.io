@@ -49,7 +49,7 @@
             </div>
             
             <div class="shortcuts">
-                <a href="#tetrahedron_fractal">Example 4: Tetrahedron Fractal</a>
+                <a href="#phyllotaxis">Example 4: Phyllotaxis Flower</a>
             </div>
 
             <div class="shortcuts">
@@ -114,6 +114,15 @@ import utils #utils.py is the module we want to import
 </code>
 </pre>
 
+            <h2 id="blender_pip">Using pip in Blender</h2>
+            <p>Sometimes we required some python modules(e.g. scipy) that were no 
+            installed as default. We can install these modules with pip just like 
+            the usual python, and import it in our bpy files.</p>
+            <p>To install modules with pip, we need to first find out where is the
+            Blender's python binary. The location of Blender's python binary:</p>
+            <div class="cmd_line">[<i>BLENDER DIRECTORY</i>]\2.83\python\bin\python.exe</div>
+            <p>Then we can install package by command below:</p>
+            <div class="cmd_line">[<i>BLENDER DIRECTORY</i>]\2.83\python\bin\python.exe> python.exe -m pip install [<i>Desired package</i>]</div>
 
             <h2>Changes in Blender bpy for 2.80+</h2>
             <h3>"Lamp" object is replaced by "Light" object</h3>
@@ -143,6 +152,26 @@ import utils #utils.py is the module we want to import
 <code class="diff">- object.select
 + object.select_get()
 + object.select_set()
+</code>
+</pre>
+            <h3>Update scene</h3>
+<pre>
+<code class="diff">- bpy.context.scene.update()
++ bpy.context.view_layer.update()
+</code>
+</pre>
+            <h3>Material diffuse color</h3>
+<pre>
+<code class="diff">mat = bpy.data.materials.new('Material')
+- mat.diffuse_color = convert_hsv((<i>Red</i>, <i>Green</i>, <i>Blue</i>))
+- mat.diffuse_intensity
++ mat.diffuse_color = convert_hsv((<i>Red</i>, <i>Green</i>, <i>Blue</i>, <i>Alpha</i>))
+</code>
+</pre>
+            <h3>Light settings</h3>
+<pre>
+<code class="diff">- bpy.context.scene.world.light_settings.ao_blend_type = blend_type
+- bpy.context.scene.world.light_settings.samples = samples
 </code>
 </pre>
         </div>
@@ -417,11 +446,22 @@ def createSurface(surface, n=10, m=10, origin=(0,0,0), name='Surface'):
         <!-- Section: Voronoi Landscape -->
         <div class="section_content" id="voronoi_land">
             <h1>Example 3: Voronoi Landscape</h1>
+            <p>This is an example of adding voronoi landscape to the scene, and render 
+                it as an image.</p>
+            <img src="./vornoi_landscape_result.png" width=50% class="center">
+            <h2>Main</h2>
+            <img src="./voronoi_land_main.png" width=30% class="center">
+
+            <h2>Source code(bpy 2.83)</h2>
+            <li><a href="https://github.com/huangyichieh/bpy_examples/blob/main/voronoi_landscape.py">
+                voronoi_landscape.py</a></li>
+            <li><a href="https://github.com/huangyichieh/bpy_examples/blob/main/utils.py">
+                utils.py</a></li>
         </div>
 
         <!-- Section: Tetrahedron Fractal -->
-        <div class="section_content" id="tetrahedron_fractal">
-            <h1>Example 4: Tetrahedron Fractal</h1>
+        <div class="section_content" id="phyllotaxis">
+            <h1>Example 4: Phyllotaxis Flower</h1>
         </div>
 
         <!-- Section: Reference -->
@@ -438,12 +478,20 @@ def createSurface(surface, n=10, m=10, origin=(0,0,0), name='Surface'):
                 https://docs.blender.org/api/current/bpy.ops.html</a></li>
             <li><a href="https://en.wikibooks.org/wiki/Blender_3D:_Noob_to_Pro/Python_Scripting">
                 https://en.wikibooks.org/wiki/Blender_3D:_Noob_to_Pro/Python_Scripting</a></li>
+            <li><a href="https://wiki.blender.org/wiki/Reference/Release_Notes/2.80/Python_API/Scene_and_Object_API">
+                https://wiki.blender.org/wiki/Reference/Release_Notes/2.80/Python_API/Scene_and_Object_API</a></li>
 
             <h2>Code samples</h2>
             <li><a href="https://github.com/njanakiev/blender-scripting#resources">
                 https://github.com/njanakiev/blender-scripting#resources</a></li>
             <li><a href="https://medium.com/@behreajj/creative-coding-in-blender-a-primer-53e79ff71e">
                 https://medium.com/@behreajj/creative-coding-in-blender-a-primer-53e79ff71e</a></li>
+
+            <h2>Using pip in Blender</h2>
+            <li><a href="https://b3d.interplanety.org/en/how-to-install-required-packages-to-the-blender-python-with-pip/">
+                https://b3d.interplanety.org/en/how-to-install-required-packages-to-the-blender-python-with-pip/</a></li>
+            <li><a href="https://blender.stackexchange.com/questions/56011/how-to-install-pip-for-blenders-bundled-python">
+                https://blender.stackexchange.com/questions/56011/how-to-install-pip-for-blenders-bundled-python</a></li>
         </div>
     </div>
 
