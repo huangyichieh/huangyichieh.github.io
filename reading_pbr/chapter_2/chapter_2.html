@@ -8,6 +8,21 @@
     <link href="https://fonts.googleapis.com/css?family=Lato:400,800" rel="stylesheet">
     <link rel=stylesheet type="text/css" href="../../topic_style.css">
     <title>Chapter 2: Geometry and Transformation</title>
+
+    <!-- for code block -->
+    <link rel="stylesheet"
+        href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.6.0/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.6.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+
+    <!-- for math equations -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        MathJax = {
+          tex: {inlineMath: [['$', '$'], ['\\(', '\\)']], tags: 'all'}
+        };
+    </script>
 </head>
 
 <body>
@@ -71,31 +86,671 @@
         <!-- Section: Coordinate Systems -->
         <div class="section_content" id="coordinate">
             <h1>Coordinate Systems</h1>
+            <p>In the general $ n $-dimensional case, an origin $ p_o $ and its 
+            $ n $ linearly independent basis vectors define an $ n $-dimensional
+            affine space. all vectors $ v $ in the space can be expressed as a linear
+            combination of the basis vector:</p>
+            <div class="formula">$$ v = s_1v_1 + s_2v_2 + ... + s_nv_n $$</div>
+            <p>Where $ v_i $ stands for $ i $th basis vector and $ s_i $ stands for 
+            $ i $th scalar value.</p>
+            <p>Any point in the space can then be presented as:</p>
+            <div class="formula">$$ v = p_o + s_1v_1 + ... + s_nv_n $$</div>
+            <p>For 3 dimensional case in pbrt, we let origin $ p_o = (0, 0, 0) $ 
+            and the 3 basis vectors $ v_x = (1, 0, 0) $, $ v_y = (0, 1, 0) $, 
+            and $ v_z = (0, 0, 1) $.</p>
+            <p>For 3D coordinate system, there are two common arranges called <i>left-handed</i> 
+            system and <i>right-handed</i> system:</p>
+            <img src="left_right_handed.svg" width="50%" class="center">
+            <p>The pbrt system uses left-handed coordinate system shown at left 
+            side of the figure.</p>
         </div>
 
         <!-- Section: Vectors -->
         <div class="section_content" id="vectors">
             <h1>Vectors</h1>
+            <p>pbrt provides both 2D and 3D vector classes. Here we only show implementation 
+            of <span class="code_line">Vector3D</span>, because <span class="code_line">Vector3D</span>
+            and <span class="code_line">Vector2D</span> have similar implementations.</p>
+<pre>
+<code class="c++">&lt;Vector Declarations&gt; &equiv;
+template <typename T> class Vector2 {
+public:
+    &lt;Vector2 Public Methods&gt;
+    &lt;Vector2 Public Data&gt;
+};
+template <typename T> class Vector3 {
+public:
+    &lt;Vector3 Public Methods&gt;
+    &lt;Vector3 Public Data&gt;
+};
+</code>
+</pre>
+            <p>For convenience, both index and class memeber methods are provided 
+            to access the data in vector:</p>
+<pre>
+<code class="c++">&lt;Vector2 Public Data&gt; &equiv;
+T x, y;
+
+&lt;Vector3 Public Data&gt; &equiv;
+T x, y, z;
+
+&lt;Vector3 Public Methods&gt; &equiv;
+T operator[](int i) const { 
+    Assert(i &gt;= 0 && i &lt;= 2);
+    if (i == 0) return x;
+    if (i == 1) return y;
+    return z;
+}
+T &operator[](int i) { 
+    Assert(i &gt;= 0 && i &lt;= 2);
+    if (i == 0) return x;
+    if (i == 1) return y;
+    return z;
+}
+
+&lt;Vector Declarations&gt; &plus;&equiv;
+typedef Vector2&lt;Float&gt; Vector2f;
+typedef Vector2&lt;int&gt;   Vector2i;
+typedef Vector3&lt;Float&gt; Vector3f;
+typedef Vector3&lt;int&gt;   Vector3i;
+</code>
+</pre>
+            <p>The data members are usually only acessible inside the class. But due 
+            to frequent use of data members in <span class="code_line">Vector3D</span> and
+            <span class="code_line">Vector2D</span>, also to provide a better readability,
+            it is not recommended to hide its data members.</p>
+            <h2>Detect NaN</h2>
+            <p>It is important to detect a bug in the system as soon as possible,
+            so we add <span class="code_line">NaN</span> assertion in the constructor:</p>
+<pre>
+<code class="c++">&lt;Vector3 Public Methods&gt; &plus;&equiv;
+Vector3() { x = y = z = 0; }
+Vector3(T x, T y, T z)
+    : x(x), y(y), z(z) {
+    Assert(!HasNaNs());
+}
+bool HasNaNs() const {
+    return std::isnan(x) || std::isnan(y) || std::isnan(z);
+}
+</code>
+</pre>
+            <h2>Addition, substraction, scalar multiplication and scalar division</h2>
+<pre>
+<code class="c++">&lt;Vector3 Public Methods&gt; &plus;&equiv;
+Vector3&lt;T&gt; operator+(const Vector3&lt;T&gt; &v) const {
+    return Vector3(x + v.x, y + v.y, z + v.z);
+}
+Vector3&lt;T&gt;& operator+=(const Vector3&lt;T&gt; &v) {
+    x += v.x; y += v.y; z += v.z;
+    return *this;
+}
+Vector3&lt;T&gt; operator*(T s) const { return Vector3&lt;T&gt;(s*x, s*y, s*z); }
+Vector3&lt;T&gt; &operator*=(T s) {
+    x *= s; y *= s; z *= s;
+    return *this;
+}
+Vector3&lt;T&gt; operator/(T f) const {
+    Assert(f != 0);
+    Float inv = (Float)1 / f;
+    return Vector3&lt;T&gt;(x * inv, y * inv, z * inv);
+}
+Vector3&lt;T&gt; &operator/=(T f) {
+    Assert(f != 0);
+    Float inv = (Float)1 / f;
+    x *= inv; y *= inv; z *= inv;
+    return *this;
+}
+Vector3&lt;T&gt; operator-() const { return Vector3&lt;T&gt;(-x, -y, -z); }
+
+
+&lt;Geometry Inline Functions&gt;= 
+template &lt;typename T&gt; inline Vector3&lt;T&gt;
+operator*(T s, const Vector3&lt;T&gt; &v) { return v * s; }
+template &lt;typename T&gt; Vector3&lt;T&gt; Abs(const Vector3&lt;T&gt; &v) {
+    return Vector3&lt;T&gt;(std::abs(v.x), std::abs(v.y), std::abs(v.z));
+}
+</code>
+</pre>
+            <h2>Dot and cross product</h2>
+            <p>Dot product formula:</p>
+            <div class="formula">
+                $$ v \cdot w = v_xw_x + v_yw_y + v_zw_z $$
+                $$ v \cdot w = \|v\|\|w\|\cos{\theta} $$
+            </div>
+<pre>
+<code class="c++">&lt;Geometry Inline Functions&gt; &plus;&equiv;
+template &lt;typename T&gt; inline T
+Dot(const Vector3&lt;T&gt; &v1, const Vector3&lt;T&gt; &v2) {
+    return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+}
+template &lt;typename T&gt;
+inline T AbsDot(const Vector3&lt;T&gt; &v1, const Vector3&lt;T&gt; &v2) {
+    return std::abs(Dot(v1, v2));
+}
+</code>
+</pre>
+            <p>Cross product formula:</p>
+            <div class="formula">
+                $$ (v \times w)_x = v_yw_z - v_zw_y, 
+                (v \times w)_y = v_zw_x - v_xw_z, 
+                (v \times w)_x = v_xw_y - v_yw_x$$
+                $$ v \times w = \|v\|\|w\||\sin{\theta}| $$
+            </div>
+            <h2>Normalization</h2>
+<pre>
+<code class="c++">&lt;Vector3 Public Methods&gt; &plus;&equiv;
+Float LengthSquared() const { return x * x + y * y + z * z; }
+Float Length() const { return std::sqrt(LengthSquared()); }
+
+&lt;Geometry Inline Functions&gt; &plus;&equiv;
+template &lt;typename T&gt; inline Vector3&lt;T&gt;
+Normalize(const Vector3&lt;T&gt; &v) { return v / v.Length(); }
+</code>
+</pre>
+            <h2>Miscellaneous operations</h2>
+<pre>
+<code class="c++">&lt;Geometry Inline Functions&gt; &plus;&equiv;
+template &lt;typename T&gt; T
+MinComponent(const Vector3&lt;T&gt; &v) {
+    return std::min(v.x, std::min(v.y, v.z));
+}
+template &lt;typename T&gt; T
+MaxComponent(const Vector3&lt;T&gt; &v) {
+    return std::max(v.x, std::max(v.y, v.z));
+}
+template &lt;typename T&gt; int
+MaxDimension(const Vector3&lt;T&gt; &v) {
+    return (v.x &gt; v.y) ? ((v.x &gt; v.z) ? 0 : 2) : 
+            ((v.y &gt; v.z) ? 1 : 2);
+}
+template &lt;typename T&gt; Vector3&lt;T&gt;
+Min(const Vector3&lt;T&gt; &p1, const Vector3&lt;T&gt; &p2) {
+    return Vector3&lt;T&gt;(std::min(p1.x, p2.x), std::min(p1.y, p2.y), 
+                        std::min(p1.z, p2.z));
+}
+template &lt;typename T&gt; Vector3&lt;T&gt;
+Max(const Vector3&lt;T&gt; &p1, const Vector3&lt;T&gt; &p2) {
+    return Vector3&lt;T&gt;(std::max(p1.x, p2.x), std::max(p1.y, p2.y), 
+                        std::max(p1.z, p2.z));
+}
+template &lt;typename T&gt; Vector3&lt;T&gt;
+Permute(const Vector3&lt;T&gt; &v, int x, int y, int z) {
+    return Vector3&lt;T&gt;(v[x], v[y], v[z]);
+}
+</code>
+</pre>
+            <h2>Coordinate system from a vector</h2>
+            <p>Given a vector, we can create a local coordinate system by zeroing 
+            one of the componens in the original vector, swapping the remaining two,
+            negating one of them. Then we cross product the original vector with 
+            this vector to get the third perpendicular vector.</p>
+<pre>
+<code class="c++">&lt;Geometry Inline Functions&gt; &plus;&equiv;
+template &lt;typename T&gt; inline void
+CoordinateSystem(const Vector3&lt;T&gt; &v1, Vector3&lt;T&gt; *v2, Vector3&lt;T&gt; *v3) {
+    if (std::abs(v1.x) &gt; std::abs(v1.y))
+        *v2 = Vector3&lt;T&gt;(-v1.z, 0, v1.x) /
+                std::sqrt(v1.x * v1.x + v1.z * v1.z);
+    else
+        *v2 = Vector3&lt;T&gt;(0, v1.z, -v1.y) /
+                std::sqrt(v1.y * v1.y + v1.z * v1.z);
+    *v3 = Cross(v1, *v2);
+}
+</code>
+</pre>
         </div>
 
         <!-- Section: Points -->
         <div class="section_content" id="points">
             <h1>Points</h1>
+            <p>A point is a zero-dimensional location in 2D or 3D space. Although
+            it looks similar like <span class="code_line">Vector</span>, it represent
+            a position whereas <span class="code_line">Vector</span> represent a direction.</p>
+            <p>Some similar part of implementation will be listed below:</p>
+<pre>
+<code class="c++">&lt;Point Declarations&gt; &equiv;
+template &lt;typename T&gt; class Point2 {
+public:
+    &lt;Point2 Public Methods&gt;
+    &lt;Point2 Public Data&gt;
+};
+template &lt;typename T&gt; class Point3 {
+public:
+    &lt;Point3 Public Methods&gt;
+    &lt;Point3 Public Data&gt;
+};
+
+&lt;Point Declarations&gt; &plus;&equiv;
+typedef Point2&lt;Float&gt; Point2f;
+typedef Point2&lt;int&gt;   Point2i;
+typedef Point3&lt;Float&gt; Point3f;
+typedef Point3&lt;int&gt;   Point3i;
+
+&lt;Point2 Public Data&gt; &equiv;
+T x, y;
+&lt;Point3 Public Data&gt; &equiv;
+T x, y, z;
+
+&lt;Point3 Public Methods&gt; &equiv;
+Point3() { x = y = z = 0; }
+Point3(T x, T y, T z) : x(x), y(y), z(z) {
+    Assert(!HasNaNs());
+}
+
+&lt;Geometry Inline Functions&gt; &plus;&equiv;
+template &lt;typename T&gt; Point3&lt;T&gt;
+Min(const Point3&lt;T&gt; &p1, const Point3&lt;T&gt; &p2) {
+    return Point3&lt;T&gt;(std::min(p1.x, p2.x), std::min(p1.y, p2.y), 
+                        std::min(p1.z, p2.z));
+}
+template &lt;typename T&gt; Point3&lt;T&gt;
+Max(const Point3&lt;T&gt; &p1, const Point3&lt;T&gt; &p2) {
+    return Point3&lt;T&gt;(std::max(p1.x, p2.x), std::max(p1.y, p2.y), 
+                        std::max(p1.z, p2.z));
+}
+
+&lt;Geometry Inline Functions&gt; &plus;&equiv;
+template <typename T> Point3<T> Abs(const Point3<T> &p) {
+    return Point3<T>(std::abs(p.x), std::abs(p.y), std::abs(p.z));
+}
+
+&lt;Geometry Inline Functions&gt; &plus;&equiv;
+template &lt;typename T&gt; Point3&lt;T&gt;
+Permute(const Point3&lt;T&gt; &p, int x, int y, int z) {
+    return Point3&lt;T&gt;(p[x], p[y], p[z]);
+}
+</code>
+</pre>
+            <p>When a vector is added to a point, it obatin a new point.</p>
+<pre>
+<code class="c++">&lt;Point3 Public Methods&gt; &plus;&equiv;
+Point3&lt;T&gt; operator+(const Vector3&lt;T&gt; &v) const {
+    return Point3&lt;T&gt;(x + v.x, y + v.y, z + v.z);
+}
+Point3&lt;T&gt; &operator+=(const Vector3&lt;T&gt; &v) {
+    x += v.x; y += v.y; z += v.z;
+    return *this;
+}
+</code>
+</pre>
+            <p>Same for the subtraction, only that subtracting two points obtain a
+            vector</p>
+            <p>The distance between two points can be computed by subtracting two 
+            points, and calculate the length of the resulting vector.</p>
+<pre>
+<code class="c++">&lt;Geometry Inline Functions&gt; &plus;&equiv;
+template &lt;typename T&gt; inline Float
+Distance(const Point3&lt;T&gt; &p1, const Point3&lt;T&gt; &p2) {
+    return (p1 - p2).Length();
+}
+template &lt;typename T&gt; inline Float
+DistanceSquared(const Point3&lt;T&gt; &p1, const Point3&lt;T&gt; &p2) {
+    return (p1 - p2).LengthSquared();
+}
+</code>
+</pre>
+            <p>Some other useful functions are <span class="code_line">Lerp()</span>(linear interpolation), 
+            <span class="code_line">Floor()</span> and <span class="code_line">Ceil()</span>.</p>
+<pre>
+<code class="c++">&lt;Geometry Inline Functions&gt; &plus;&equiv;
+template &lt;typename T&gt; Point3&lt;T&gt;
+Lerp(Float t, const Point3&lt;T&gt; &p0, const Point3&lt;T&gt; &p1) {
+    return (1 - t) * p0 + t * p1;
+}
+template &lt;typename T&gt; Point3&lt;T&gt; Floor(const Point3&lt;T&gt; &p) {
+    return Point3&lt;T&gt;(std::floor(p.x), std::floor(p.y), std::floor(p.z));
+}
+template &lt;typename T&gt; Point3&lt;T&gt; Ceil(const Point3&lt;T&gt; &p) {
+    return Point3&lt;T&gt;(std::ceil(p.x), std::ceil(p.y), std::ceil(p.z));
+}
+</code>
+</pre>
         </div>
 
         <!-- Section: Normals -->
         <div class="section_content" id="normals">
             <h1>Normals</h1>
+            <p>Normal is a vector that is perpendicular to a surface at a particular 
+            position. Altough normals are superficially cimilar to vectors, it differs
+            by its definition according to their relationship to a particular surface
+            and behave differently when applying transformation.</p>
+<pre>
+<code class="c++">&lt;Normal Declarations&gt; &equiv;
+template &lt;typename T&gt; class Normal3 {
+public:
+    &lt;&lt;Normal3 Public Methods&gt;&gt; 
+    &lt;&lt;Normal3 Public Data&gt;&gt; 
+};
+typedef Normal3&lt;Float&gt; Normal3f;
+</code>
+</pre>
+            <p>One new operation to implement is flipping the surface normal such
+            that it lies in the same hemisphere as a given vector. The rest of the 
+            operations simply follows from the vector.</p>
+<pre>
+<code class="c++">&lt;Geometry Inline Functions&gt; &plus;&equiv;
+template &lt;typename T&gt; inline Normal3&lt;T&gt;
+Faceforward(const Normal3&lt;T&gt; &n, const Vector3&lt;T&gt; &v) {
+    return (Dot(n, v) &lt; 0.f) ? -n : n;
+}
+</code>
+</pre>
         </div>
 
         <!-- Section: Rays -->
         <div class="section_content" id="rays">
             <h1>Rays</h1>
+            <img src="ray_point_vector.svg" width="40%" class="center">
+            <p>A ray is a semi-infinite line specified by its origin $ o $ and direction $ d $.</p>
+<pre>
+<code class="c++">&lt;Ray Declarations&gt; &equiv;
+class Ray {
+public:
+    &lt;Ray Public Methods&gt;
+    &lt;Ray Public Data&gt;
+};
+
+&lt;Ray Public Data&gt; &equiv;
+Point3f o;
+Vector3f d;
+</code>
+</pre>
+            <p>Parametric form of a ray:</p>
+            <div class="formula">$$ r(t) = o + td, 0 \leq t &lt; \infty $$</div>
+            <p>The ray also includes a member variable <span class="code_line">tMax</span> 
+            that limits the ray to a segment $ [o, r(t_{max})) $ along its infinite extent:</p>
+<pre>
+<code class="c++">&lt;Ray Public Data&gt; &plus;&equiv;
+mutable Float tMax;
+</code>
+</pre>
+            <p>Each ray also has a time value:</p>
+<pre>
+<code class="c++">&lt;Ray Public Data&gt; &plus;&equiv;
+Float time;
+</code>
+</pre>
+            <p>Finally, each ray records the medium containing its origin.</p>
+<pre>
+<code class="c++">&lt;Ray Public Data&gt; &plus;&equiv;
+const Medium *medium;
+</code>
+</pre>
+            <p>Constructor for rays:</p>
+<pre>
+<code class="c++">&lt;Ray Public Methods&gt; &plus;&equiv;
+Ray() : tMax(Infinity), time(0.f), medium(nullptr) { }
+Ray(const Point3f &o, const Vector3f &d, Float tMax = Infinity,
+    Float time = 0.f, const Medium *medium = nullptr)
+    : o(o), d(d), tMax(tMax), time(time), medium(medium) { }
+</code>
+</pre>
+            <p>To find out the position of ray after time <span class="code_line">t</span>,
+            we uses the operator overloading below:</p>
+<pre>
+<code class="c++">&lt;Ray Public Methods&gt; &plus;&equiv;
+Point3f operator()(Float t) const { return o + d * t; }
+</code>
+</pre>
+            <h2>Ray differentials</h2>
+            <p>For antialiasing with the texture functions, it is helpful for pbrt 
+            to keep track of some additional information with rays. 
+            <span class="code_line">RayDifferential</span> contains additional information 
+            about two neighboring rays in x and y direction.</p>
+<pre>
+<code class="c++">&lt;Ray Declarations&gt; &plus;&equiv;
+class RayDifferential : public Ray {
+public:
+    &lt;RayDifferential Public Methods&gt;
+    &lt;RayDifferential Public Data&gt;
+};
+
+&lt;RayDifferential Public Methods&gt; &equiv;
+RayDifferential() { hasDifferentials = false; }
+RayDifferential(const Point3f &o, const Vector3f &d,
+        Float tMax = Infinity, Float time = 0.f,
+        const Medium *medium = nullptr)
+    : Ray(o, d, tMax, time, medium) {
+    hasDifferentials = false; 
+}
+RayDifferential(const Ray &ray) : Ray(ray) {
+    hasDifferentials = false; 
+}
+
+&lt;RayDifferential Public Data&gt; &equiv;
+bool hasDifferentials;
+Point3f rxOrigin, ryOrigin;
+Vector3f rxDirection, ryDirection;
+</code>
+</pre>
+            <p>Camera implementations in pbrt compute differentials for rays leaving 
+            the camera under the assumption that camera rays are spaced one pixel 
+            apart. Integrators such as the SamplerIntegrator can generate multiple 
+            camera rays per pixel, in which case the actual distance between samples 
+            is lower. The <span class="code_line">ScaleDifferentials()</span> method 
+            defined below update differential rays for an estimated sample spacing 
+            of s.</p>
+<pre>
+<code class="c++">&lt;RayDifferential Public Methods&gt; &plus;&equiv;
+void ScaleDifferentials(Float s) {
+    rxOrigin = o + (rxOrigin - o) * s;
+    ryOrigin = o + (ryOrigin - o) * s;
+    rxDirection = d + (rxDirection - d) * s;
+    ryDirection = d + (ryDirection - d) * s;
+}
+</code>
+</pre>
         </div>
 
         <!-- Section: 3D Bounding Box -->
         <div class="section_content" id="bbox">
             <h1>3D Bounding Box</h1>
+            <p>The bounding volume hierarchy uses 3D boxes to bound geometric primitives 
+            in the scene.</p>
+<pre>
+<code class="c++">&lt;Bounds Declarations&gt; &equiv;
+template &lt;typename T&gt; class Bounds2 {
+public:
+    &lt;Bounds2 Public Methods&gt;
+    &lt;Bounds2 Public Data&gt;
+};
+template &lt;typename T&gt; class Bounds3 {
+public:
+    &lt;Bounds3 Public Methods&gt;
+    &lt;Bounds3 Public Data&gt;
+};
+typedef Bounds2&lt;Float&gt; Bounds2f;
+typedef Bounds2&lt;int&gt;   Bounds2i;
+typedef Bounds3&lt;Float&gt; Bounds3f;
+typedef Bounds3&lt;int&gt;   Bounds3i;
+</code>
+</pre>
+            <p>pbrt uses axis-aligned bounding box, where the box edges are aligned 
+            with the coordinate system axes. The bounding box can be repesented with
+            one of its vertices and three length, each represnting the distance spanned 
+            along $ x $, $ y $ and $ z $ direction.</p>
+            <img src="aabb.svg" width="50%" class="center">
+            <p>The constructor for bounding box is shown below:</p>
+<pre>
+<code class="c++">&lt;Bounds3 Public Data&gt; &equiv;
+Point3&lt;T&gt; pMin, pMax;
+
+&lt;Bounds3 Public Methods&gt; &equiv;
+Bounds3() {
+    T minNum = std::numeric_limits&lt;T&gt;::lowest();
+    T maxNum = std::numeric_limits&lt;T&gt;::max();
+    pMin = Point3&lt;T&gt;(maxNum, maxNum, maxNum);
+    pMax = Point3&lt;T&gt;(minNum, minNum, minNum);
+}
+Bounds3(const Point3&lt;T&gt; &p) : pMin(p), pMax(p) { }
+Bounds3(const Point3&lt;T&gt; &p1, const Point3&lt;T&gt; &p2)
+    : pMin(std::min(p1.x, p2.x), std::min(p1.y, p2.y),
+           std::min(p1.z, p2.z)),
+      pMax(std::max(p1.x, p2.x), std::max(p1.y, p2.y),
+           std::max(p1.z, p2.z)) {
+}
+</code>
+</pre>
+            <p>Sometimes it is useful to use array indexing to select the two points
+            at the corners of the box.</p>
+<pre>
+<code class="c++">&lt;Bounds3 Public Methods&gt; &plus;&equiv;
+const Point3&lt;T&gt; &operator[](int i) const;
+Point3&lt;T&gt; &operator[](int i);
+</code>
+</pre>
+            <p><span class="code_line">Corner()</span> method returns one of the 
+            eight coordinates of the bounding box.</p>
+<pre>
+<code class="c++">&lt;Bounds3 Public Methods&gt; &plus;&equiv;
+Point3&lt;T&gt; Corner(int corner) const {
+    return Point3&lt;T&gt;((*this)[(corner & 1)].x,
+                        (*this)[(corner & 2) ? 1 : 0].y,
+                        (*this)[(corner & 4) ? 1 : 0].z);
+}
+</code>
+</pre>
+            <p><span class="code_line">Union()</span> method returns a new bounding 
+            box that encompasses that point as well as the original box. Or it returns
+            a new bounding box that encompasses by two other bounding boxes.</p>
+<pre>
+<code class="c++">&lt;Geometry Inline Functions&gt; &plus;&equiv;
+template &lt;typename T&gt; Bounds3 &lt;T&gt;
+Union(const Bounds3&lt;T&gt; &b, const Point3&lt;T&gt; &p) {
+    return Bounds3&lt;T&gt;(Point3&lt;T&gt;(std::min(b.pMin.x, p.x),
+                                std::min(b.pMin.y, p.y),
+                                std::min(b.pMin.z, p.z)),
+                        Point3&lt;T&gt;(std::max(b.pMax.x, p.x),
+                                std::max(b.pMax.y, p.y),
+                                std::max(b.pMax.z, p.z)));
+}
+template &lt;typename T&gt; Bounds3&lt;T&gt;
+Union(const Bounds3&lt;T&gt; &b1, const Bounds3&lt;T&gt; &b2) {
+    return Bounds3&lt;T&gt;(Point3&lt;T&gt;(std::min(b1.pMin.x, b2.pMin.x),
+                                std::min(b1.pMin.y, b2.pMin.y),
+                                std::min(b1.pMin.z, b2.pMin.z)),
+                        Point3&lt;T&gt;(std::max(b1.pMax.x, b2.pMax.x),
+                                std::max(b1.pMax.y, b2.pMax.y),
+                                std::max(b1.pMax.z, b2.pMax.z)));
+}
+</code>
+</pre>
+            <p>To find intersection of two bounding boxes:</p>
+<pre>
+<code class="c++">&lt;Geometry Inline Functions&gt; &plus;&equiv;
+template &lt;typename T&gt; Bounds3&lt;T&gt;
+Intersect(const Bounds3&lt;T&gt; &b1, const Bounds3&lt;T&gt; &b2) {
+    return Bounds3&lt;T&gt;(Point3&lt;T&gt;(std::max(b1.pMin.x, b2.pMin.x),
+                                std::max(b1.pMin.y, b2.pMin.y),
+                                std::max(b1.pMin.z, b2.pMin.z)),
+                      Point3&lt;T&gt;(std::min(b1.pMax.x, b2.pMax.x),
+                                std::min(b1.pMax.y, b2.pMax.y),
+                                std::min(b1.pMax.z, b2.pMax.z)));
+}
+</code>
+</pre>
+            <p>To detect whether two bounding boxes overlap:</p>
+<pre>
+<code class="c++">&lt;Geometry Inline Functions&gt; &plus;&equiv;
+template &lt;typename T&gt;
+bool Overlaps(const Bounds3&lt;T&gt; &b1, const Bounds3&lt;T&gt; &b2) {
+    bool x = (b1.pMax.x &gt;= b2.pMin.x) && (b1.pMin.x &lt;= b2.pMax.x);
+    bool y = (b1.pMax.y &gt;= b2.pMin.y) && (b1.pMin.y &lt;= b2.pMax.y);
+    bool z = (b1.pMax.z &gt;= b2.pMin.z) && (b1.pMin.z &lt;= b2.pMax.z);
+    return (x && y && z);
+}
+</code>
+</pre>
+            <p>To check if a point is inside bounding box:</p>
+<pre>
+<code class="c++">&lt;Geometry Inline Functions&gt; &plus;&equiv;
+template &lt;typename T&gt;
+bool InsideExclusive(const Point3&lt;T&gt; &p, const Bounds3&lt;T&gt; &b) {
+    return (p.x &gt;= b.pMin.x && p.x &lt; b.pMax.x &&
+            p.y &gt;= b.pMin.y && p.y &lt; b.pMax.y &&
+            p.z &gt;= b.pMin.z && p.z &lt; b.pMax.z);
+}
+</code>
+</pre>
+            <p><span class="code_line">Expand()</span> function pads the bounding 
+            box by a constant distance.</p>
+<pre>
+<code class="c++">&lt;Geometry Inline Functions&gt; &plus;&equiv;
+template &lt;typename T, typename U&gt; inline Bounds3&lt;T&gt;
+Expand(const Bounds3&lt;T&gt; &b, U delta) {
+    return Bounds3&lt;T&gt;(b.pMin - Vector3&lt;T&gt;(delta, delta, delta),
+                      b.pMax + Vector3&lt;T&gt;(delta, delta, delta));
+}
+</code>
+</pre>
+            <p><span class="code_line">Diagonal()</span> function returns the vector 
+            along the box diagonal from minimum point to maximum point.</p>
+<pre>
+<code class="c++">&lt;Bounds3 Public Methods&gt; &plus;&equiv;
+Vector3&lt;T&gt; Diagonal() const { return pMax - pMin; }
+</code>
+</pre>
+            <p>Calculate surface area and volume of bounding box:</p>
+<pre>
+<code class="c++">&lt;Bounds3 Public Methods&gt; &plus;&equiv;
+T SurfaceArea() const {
+    Vector3&lt;T&gt; d = Diagonal();
+    return 2 * (d.x * d.y + d.x * d.z + d.y * d.z);
+}
+T Volume() const {
+    Vector3&lt;T&gt; d = Diagonal();
+    return d.x * d.y * d.z;
+}
+</code>
+</pre>
+            <p>Return the index of which the three axes is longest.</p>
+<pre>
+<code class="c++">&lt;Bounds3 Public Methods&gt; &plus;&equiv;
+int MaximumExtent() const {
+    Vector3&lt;T&gt; d = Diagonal();
+    if (d.x &gt; d.y && d.x &gt; d.z)
+        return 0;
+    else if (d.y &gt; d.z)
+        return 1;
+    else
+        return 2;
+}
+</code>
+</pre>
+            <p>Linear interpolation:</p>
+<pre>
+<code class="c++">&lt;Bounds3 Public Methods&gt; &plus;&equiv;
+Point3&lt;T&gt; Lerp(const Point3f &t) const {
+    return Point3&lt;T&gt;(::Lerp(t.x, pMin.x, pMax.x),
+                        ::Lerp(t.y, pMin.y, pMax.y),
+                        ::Lerp(t.z, pMin.z, pMax.z));
+}    
+</code>
+</pre>
+            <p>Returns the continuous position of a point relative to the corners 
+            of the box, where a point at the minimum corner has offset $ (0, 0, 0) $, 
+            a point at the maximum corner has offset $ (1, 1, 1) $, and so forth.</p>
+<pre>
+<code class="c++">&lt;Bounds3 Public Methods&gt; &plus;&equiv;
+Vector3&lt;T&gt; Offset(const Point3&lt;T&gt; &p) const {
+    Vector3&lt;T&gt; o = p - pMin;
+    if (pMax.x &gt; pMin.x) o.x /= pMax.x - pMin.x;
+    if (pMax.y &gt; pMin.y) o.y /= pMax.y - pMin.y;
+    if (pMax.z &gt; pMin.z) o.z /= pMax.z - pMin.z;
+    return o;
+}
+</code>
+</pre>
+            <p><span class="code_line">BoundingSphere()</span> return the center 
+            and the radius of a sphere that bounds the bounding box.</p>
+<pre>
+<code class="c++">&lt;Bounds3 Public Methods&gt; &plus;&equiv;
+void BoundingSphere(Point3&lt;T&gt; *center, Float *radius) const {
+    *center = (pMin + pMax) / 2;
+    *radius = Inside(*center, *this) ? Distance(*center, pMax) : 0;
+}
+</code>
+</pre>
         </div>
 
         <!-- Section: Transformations -->
